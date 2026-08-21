@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>B형(Pro) C++ 풀이 팁</title>
+<style>
+:root{
+  --bg:#f5f7fb; --panel:#fff; --text:#172033; --muted:#667085; --line:#e4e7ec;
+  --side:#082346; --side2:#0d2e58; --brand:#2677ff; --chip:#edf4ff; --shadow:0 10px 24px rgba(15,23,42,.08);
+}
+body.dark{
+  --bg:#0d1420; --panel:#111c2d; --text:#edf4ff; --muted:#98a2b3; --line:#243148; --chip:#183150; --shadow:0 10px 30px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter, Pretendard, "Noto Sans KR", Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input{font:inherit} html{scroll-behavior:smooth}
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+.sidebar{background:linear-gradient(180deg,var(--side),var(--side2));color:#fff;padding:22px 18px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{display:flex;gap:10px;align-items:center;font-weight:800;font-size:21px;margin-bottom:24px}
+.logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#2e90fa,#7a5af8)}
+.nav-title{font-size:12px;color:#a9bad3;margin:22px 8px 8px}
+.nav button{width:100%;border:0;background:transparent;color:#dbe8f9;text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer;margin:2px 0}
+.nav button:hover,.nav button.active{background:#1565d8;color:#fff}
+.tipbox{margin-top:18px;border:1px solid #315078;border-radius:14px;padding:14px;font-size:13px;line-height:1.6;color:#d6e6fb}
+.main{min-width:0}
+.topbar{height:64px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;padding:0 30px;position:sticky;top:0;z-index:10}
+.search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:9px 12px;width:min(430px,56vw)}
+.search input{width:100%;border:0;outline:0;background:transparent;color:var(--text)}
+.iconbtn{margin-left:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:9px 11px;cursor:pointer}
+.content{padding:34px 38px 70px;max-width:1450px;margin:auto}
+.hero h1{font-size:38px;margin:0 0 8px} .hero p{color:var(--muted);font-size:16px;line-height:1.7;margin:0}
+.callout{margin-top:22px;background:linear-gradient(135deg,#eaf3ff,#f3edff);border:1px solid #d8e5ff;padding:18px 20px;border-radius:16px;color:#223}
+body.dark .callout{background:linear-gradient(135deg,#162b48,#241f46);border-color:#32476b;color:#eef4ff}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0 34px}
+.qcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.qcard b{display:block;margin-bottom:6px} .qcard span{color:var(--muted);font-size:13px;line-height:1.5}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:34px 0 14px}
+.section-head h2{font-size:24px;margin:0} .section-head p{margin:0;color:var(--muted);font-size:13px}
+.patterns{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.visual{height:190px;background:#fff;display:grid;place-items:center;padding:12px;border-bottom:1px solid var(--line);position:relative;cursor:pointer}
+body.dark .visual{background:#f7f9fc}
+.visual:hover::after{content:"클릭해서 코드 예시 보기";position:absolute;right:10px;top:10px;background:rgba(17,24,39,.78);color:#fff;padding:6px 9px;border-radius:8px;font-size:11px}
+.visual img{max-width:100%;max-height:100%;object-fit:contain}
+.card-body{padding:15px 16px 16px}
+.kicker{font-size:12px;color:var(--muted);margin-bottom:5px}
+.card h3{font-size:16px;margin:0 0 10px}
+.tag{display:inline-flex;background:var(--chip);color:#175cd3;padding:7px 10px;border-radius:9px;font-weight:800;font-size:13px;margin-bottom:9px}
+.why{color:var(--muted);font-size:13px;line-height:1.55}
+.details{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:18px}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+.detail h3{font-size:20px;margin:0 0 10px} .detail p,.detail li{color:var(--muted);line-height:1.65} .detail ul{padding-left:20px}
+.code{background:#0c1625;color:#d6e7ff;border-radius:12px;padding:14px;overflow:auto;font:13px/1.55 Consolas,monospace;white-space:pre}
+.logic{background:var(--bg);border:1px dashed var(--line);border-radius:12px;padding:13px;margin-top:12px;font-size:13px;line-height:1.6}
+.badge{font-size:11px;padding:4px 8px;border-radius:999px;background:#fef3f2;color:#b42318;font-weight:700}
+.hidden{display:none!important}
+.footer{margin-top:34px;color:var(--muted);font-size:12px}
+svg{width:100%;height:100%}
+.decision{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.flow{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.flow h3{margin:0 0 10px}
+.flow ol{margin:0;padding-left:20px;color:var(--muted);line-height:1.75}
+.flow li b{color:var(--text)}
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal.show{display:flex}
+.modal-box{width:min(1100px,96vw);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
+.modal-close{border:1px solid var(--line);background:var(--bg);color:var(--text);padding:8px 11px;border-radius:10px;cursor:pointer}
+.modal-body{padding:20px;display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.pill{display:inline-flex;padding:7px 10px;border-radius:999px;background:var(--chip);font-size:12px;font-weight:700;color:#175cd3;margin-right:6px;margin-bottom:8px}
+.note{background:var(--bg);padding:14px;border-radius:14px;border:1px solid var(--line);margin-bottom:12px}
+.note h4{margin:0 0 8px} .note p,.note li{color:var(--muted);line-height:1.65}
+@media(max-width:1200px){.patterns{grid-template-columns:repeat(2,1fr)}.quick{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:980px){.decision,.modal-body,.details{grid-template-columns:1fr}}
+@media(max-width:820px){.app{grid-template-columns:1fr}.sidebar{display:none}.content{padding:24px 18px}.patterns,.quick{grid-template-columns:1fr}.topbar{padding:0 14px}.search{width:100%}.hero h1{font-size:30px}}
+
+.stl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stl-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:.16s transform,.16s border-color}
+.stl-card:hover{transform:translateY(-2px);border-color:#84adff}
+.stl-card h3{margin:0 0 8px;font-size:17px}
+.stl-card .sig{font:12px/1.5 Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px;margin-bottom:10px;overflow:auto}
+.stl-card .desc{color:var(--muted);font-size:13px;line-height:1.55;min-height:42px}
+.stl-card .cx{display:inline-block;margin-top:10px;padding:5px 8px;border-radius:999px;background:var(--chip);color:#175cd3;font-size:11px;font-weight:800}
+.stl-card .openhint{float:right;margin-top:11px;color:var(--muted);font-size:11px}
+@media(max-width:1200px){.stl-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.stl-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.stl-grid{grid-template-columns:1fr}}
+
+
+.method-table-wrap{margin-top:16px}
+.method-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:12px}
+.method-table th,.method-table td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.method-table th{background:var(--bg);font-weight:800}
+.method-table tr:last-child td{border-bottom:0}
+.method-table td:first-child{font-family:Consolas,monospace;color:#175cd3;font-weight:700;white-space:nowrap}
+body.dark .method-table td:first-child{color:#84adff}
+.method-table td:nth-child(3){white-space:nowrap;font-weight:700}
+.method-note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.55}
+.method-legend{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+
+
+.group-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.group-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:.16s transform,.16s border-color;position:relative}
+.group-card:hover{transform:translateY(-3px);border-color:#84adff}
+.group-card h3{margin:0 0 7px;font-size:19px}
+.group-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.group-card .mini{margin-top:13px;display:flex;gap:7px;flex-wrap:wrap}
+.group-card .mini span{font-size:11px;padding:5px 8px;border-radius:999px;background:var(--chip);color:#175cd3;font-weight:700}
+.btype-modal-section{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.btype-modal-section h4{margin:0 0 9px}
+.btype-modal-section ul{margin:0;padding-left:20px;color:var(--muted);line-height:1.7}
+.choice-box{border-left:4px solid #2e90fa;padding:12px 14px;background:var(--bg);border-radius:10px;color:var(--text);line-height:1.6}
+.template-box{background:#101828;color:#d6e7ff;border-radius:12px;padding:14px;white-space:pre;overflow:auto;font:13px/1.55 Consolas,monospace}
+.complexity-grid{display:grid;grid-template-columns:1fr auto;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.complexity-grid div{padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px}
+.complexity-grid div:nth-last-child(-n+2){border-bottom:0}
+.complexity-grid div:nth-child(even){font-weight:700;white-space:nowrap}
+@media(max-width:1050px){.group-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.group-grid{grid-template-columns:1fr}}
+
+
+.lang-switch{display:flex;align-items:center;gap:4px;margin-right:10px;padding:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px}
+.lang-switch button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:9px;cursor:pointer;font-weight:800;font-size:12px}
+.lang-switch button.active{background:var(--panel);color:var(--text);box-shadow:0 2px 7px rgba(15,23,42,.12)}
+.lang-badge{display:inline-flex;vertical-align:middle;padding:5px 9px;border-radius:999px;background:var(--chip);color:#175cd3;font-size:11px;font-weight:800;margin-left:8px}
+body.dark .lang-badge{color:#84adff}
+.mode-tip{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.6}
+@media(max-width:820px){.lang-switch{margin-right:6px}.lang-switch button{padding:7px 8px}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">B</div><span id="brandTitle">B형(Pro) C++ 풀이 팁</span></div>
+    <div class="nav">
+      <button class="active" data-filter="all">🏠 전체 보기</button>
+      <div class="nav-title">문제 유형</div>
+      <button data-filter="graph">🟢 그래프 탐색</button>
+      <button data-filter="shortest">🟣 최단 경로</button>
+      <button data-filter="dsu">🟠 Union-Find</button>
+      <button data-filter="order">🔵 정렬·우선순위</button>
+      <button data-filter="range">🟩 구간 질의</button>
+      <button data-filter="string">🟡 문자열</button>
+      <button data-filter="api">🔴 API형 설계</button>
+      <button data-filter="sim">🧩 구현·시뮬레이션</button>
+      <button data-filter="stl" id="libNavButton">📚 C++ STL 치트시트</button>
+      <button type="button" data-scroll="btype-stl-groups" id="groupNavButton">🔥 B형 STL 선택 가이드</button>
+    </div>
+    <div class="tipbox">
+      <b>💡 그림을 보면 먼저 묻기</b><br/>
+      ① 간선 비용이 모두 같은가?<br/>
+      ② 가중치가 있는가?<br/>
+      ③ 연결 여부만 필요한가?<br/>
+      ④ 값이 계속 갱신되는가?<br/>
+      ⑤ query가 몇 번 호출되는가?
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+
+      <div class="lang-switch" id="langSwitch" aria-label="언어 전환">
+        <button type="button" data-lang="cpp" class="active">C++</button>
+        <button type="button" data-lang="python">Python</button>
+      </div>
+      <div class="search">🔎 <input id="search" placeholder="검색 (예: BFS, 다익스트라, lazy deletion)"/></div>
+      <button class="iconbtn" id="theme">🌙</button>
+    </div>
+
+    <div class="content">
+      <section class="hero">
+        <h1 id="heroTitle">B형(Pro) C++ 풀이 팁 <span class="lang-badge" id="heroLangBadge">C++</span></h1>
+        <p>문제 설명의 <b>그림·조건·API 호출 구조</b>를 보고 어떤 알고리즘과 자료구조를 먼저 떠올려야 하는지 시각적으로 정리한 실전용 가이드입니다.</p>
+        <div class="callout" id="langCallout"><b>업데이트:</b> 이제 각 카드의 <b>이미지를 클릭하면</b> 해당 유형에 맞는 <b>B형 스타일 실제 코드 예시 + 추가 해설</b>을 모달로 볼 수 있습니다.</div>
+      </section>
+
+      <section class="quick">
+        <div class="qcard"><b>🧠 그림 → 알고리즘</b><span>격자, 가중 그래프, 트리, 집합 그림을 보고 후보 알고리즘을 빠르게 좁힙니다.</span></div>
+        <div class="qcard"><b>⚙️ API → 자료구조</b><span>add/remove/query 반복 구조면 원본 저장소 + 보조 인덱스를 먼저 떠올립니다.</span></div>
+        <div class="qcard"><b>⏱️ 호출 횟수 → 복잡도</b><span>query가 10,000번이면 전체 순회 O(N)을 그대로 넣어도 되는지 먼저 계산합니다.</span></div>
+        <div class="qcard"><b>📚 STL → 적절한 인덱스</b><span>unordered_map, set, PQ, vector 등 각 STL의 템플릿 인자와 시간복잡도까지 바로 확인합니다.</span></div>
+      </section>
+
+      <section>
+        <div class="section-head"><h2>빠른 의사결정 트리</h2><p>시험장에서 먼저 스스로 물어볼 질문들</p></div>
+        <div class="decision">
+          <div class="flow" id="graphDecision">
+            <h3>격자 / 그래프에서 최단거리?</h3>
+            <ol>
+              <li><b>이동 비용이 전부 같은가?</b> → 같으면 BFS</li>
+              <li><b>가중치가 0 또는 1뿐인가?</b> → 0-1 BFS</li>
+              <li><b>가중치가 모두 0 이상인가?</b> → 다익스트라</li>
+              <li><b>가중치 대신 단순 연결 그룹인가?</b> → DFS/BFS로 연결 요소</li>
+            </ol>
+          </div>
+          <div class="flow" id="apiDecision">
+            <h3>API형 문제인가?</h3>
+            <ol>
+              <li><b>ID로 바로 찾아야 하나?</b> → 배열 / unordered_map</li>
+              <li><b>정렬 순서 조회가 필요한가?</b> → set / map / priority_queue</li>
+              <li><b>중간 삭제가 있는가?</b> → set 또는 PQ + lazy deletion</li>
+              <li><b>구간 질의가 반복되는가?</b> → Fenwick / Segment Tree</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>이런 그림/조건이면 무엇을 떠올릴까?</h2>
+          <p>카드 이미지를 클릭하면 코드 예시와 추가 해설을 확인할 수 있습니다.</p>
+        </div>
+
+        <div class="patterns" id="cards">
+          <article class="card" data-cat="graph shortest" data-key="격자 bfs 최단거리 flood fill 이동">
+            <div class="visual" data-case="grid">
+              <img src="provided_grid_example.png" alt="격자 이동 예시"/>
+            </div>
+            <div class="card-body">
+              <div class="kicker">격자 + 상하좌우 이동 + 도착점</div>
+              <h3>이 그림이면 먼저 거리의 정의부터 확인</h3>
+              <div class="tag">→ BFS / 다익스트라 후보</div>
+              <div class="why">모든 이동 비용이 1이면 BFS. 칸마다 비용이 다르거나 이동 비용이 가중치면 다익스트라.</div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="shortest" data-key="다익스트라 weighted graph 가중치 양수">
+            <div class="visual" data-case="dijkstra">
+              <svg viewBox="0 0 320 180"><g stroke="#667085" stroke-width="2"><line x1="52" y1="86" x2="145" y2="38"/><line x1="52" y1="86" x2="128" y2="144"/><line x1="145" y1="38" x2="255" y2="93"/><line x1="145" y1="38" x2="128" y2="144"/><line x1="128" y1="144" x2="255" y2="93"/></g><g fill="#fff" stroke="#344054" stroke-width="2"><circle cx="52" cy="86" r="18"/><circle cx="145" cy="38" r="18"/><circle cx="128" cy="144" r="18"/><circle cx="255" cy="93" r="18"/></g><g font-size="13" fill="#111"><text x="48" y="91">1</text><text x="141" y="43">2</text><text x="124" y="149">3</text><text x="251" y="98">4</text></g><g font-size="12" fill="#111"><text x="95" y="56">2</text><text x="82" y="123">7</text><text x="201" y="59">3</text><text x="137" y="94">1</text><text x="196" y="126">5</text></g></svg>
+            </div>
+            <div class="card-body">
+              <div class="kicker">가중치가 있는 그래프 + 모든 간선 비용 ≥ 0</div>
+              <h3>정점별 최단거리를 저장</h3>
+              <div class="tag">→ 다익스트라</div>
+              <div class="why"><code>dist[node]</code>를 두고, PQ에서 꺼낸 값이 최신 거리인지 확인합니다.</div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="shortest" data-key="0-1 bfs deque 가중치 0 1">
+            <div class="visual" data-case="zeroone">
+              <svg viewBox="0 0 320 180"><g stroke="#667085" stroke-width="2"><line x1="55" y1="90" x2="150" y2="45"/><line x1="55" y1="90" x2="150" y2="140"/><line x1="150" y1="45" x2="260" y2="90"/><line x1="150" y1="140" x2="260" y2="90"/></g><g fill="#fff" stroke="#344054" stroke-width="2"><circle cx="55" cy="90" r="18"/><circle cx="150" cy="45" r="18"/><circle cx="150" cy="140" r="18"/><circle cx="260" cy="90" r="18"/></g><g font-size="13" fill="#111"><text x="50" y="95">A</text><text x="145" y="50">B</text><text x="145" y="145">C</text><text x="255" y="95">D</text></g><g font-size="14" fill="#111"><text x="96" y="61">0</text><text x="96" y="128">1</text><text x="208" y="63">1</text><text x="208" y="128">0</text></g></svg>
+            </div>
+            <div class="card-body">
+              <div class="kicker">간선 비용이 0 또는 1뿐</div>
+              <h3>PQ보다 deque가 더 간단</h3>
+              <div class="tag">→ 0-1 BFS</div>
+              <div class="why">비용 0이면 <code>push_front</code>, 비용 1이면 <code>push_back</code>.</div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="graph" data-key="dfs bfs 연결요소 component 섬">
+            <div class="visual" data-case="component">
+              <svg viewBox="0 0 320 180"><g fill="#2e90fa"><circle cx="55" cy="45" r="8"/><circle cx="90" cy="45" r="8"/><circle cx="125" cy="45" r="8"/><circle cx="55" cy="80" r="8"/><circle cx="90" cy="80" r="8"/><circle cx="125" cy="80" r="8"/><circle cx="55" cy="115" r="8"/><circle cx="90" cy="115" r="8"/></g><g fill="#12b76a"><circle cx="205" cy="55" r="8"/><circle cx="240" cy="55" r="8"/><circle cx="205" cy="90" r="8"/></g><g fill="#7a5af8"><circle cx="250" cy="125" r="8"/><circle cx="280" cy="125" r="8"/></g><rect x="35" y="28" width="115" height="105" fill="none" stroke="#f04438" stroke-dasharray="5 5" rx="12"/><rect x="185" y="36" width="78" height="72" fill="none" stroke="#f79009" stroke-dasharray="5 5" rx="12"/></svg>
+            </div>
+            <div class="card-body">
+              <div class="kicker">여러 덩어리 / 섬 / 연결 요소</div>
+              <h3>“몇 개의 그룹인가?”</h3>
+              <div class="tag">→ DFS / BFS</div>
+              <div class="why">방문하지 않은 정점에서 탐색을 새로 시작할 때마다 연결 요소 개수가 1 증가합니다.</div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="dsu" data-key="union find disjoint set 집합 합치기 연결여부">
+            <div class="visual" data-case="uf">
+              <svg viewBox="0 0 320 180"><g stroke="#667085" stroke-width="2"><line x1="45" y1="55" x2="95" y2="90"/><line x1="95" y1="90" x2="45" y2="125"/><line x1="210" y1="55" x2="260" y2="90"/><line x1="260" y1="90" x2="210" y2="125"/></g><g fill="#fff" stroke="#344054" stroke-width="2"><circle cx="45" cy="55" r="10"/><circle cx="95" cy="90" r="10"/><circle cx="45" cy="125" r="10"/><circle cx="210" cy="55" r="10"/><circle cx="260" cy="90" r="10"/><circle cx="210" cy="125" r="10"/></g><path d="M130 90 H185" stroke="#2e90fa" stroke-width="5"/><path d="M176 80 L188 90 L176 100" fill="none" stroke="#2e90fa" stroke-width="5"/></svg>
+            </div>
+            <div class="card-body">
+              <div class="kicker">집합 합치기 + 같은 그룹인지 반복 확인</div>
+              <h3>간선 전체를 매번 탐색하지 말기</h3>
+              <div class="tag">→ Union-Find</div>
+              <div class="why"><code>find()</code>로 대표자를 찾고 <code>union()</code>으로 합칩니다.</div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="order api" data-key="priority queue heap top k 최대 최소 추천 lazy deletion">
+            <div class="visual" data-case="pq">
+              <svg viewBox="0 0 320 180"><g stroke="#667085" stroke-width="2"><line x1="160" y1="35" x2="95" y2="85"/><line x1="160" y1="35" x2="225" y2="85"/><line x1="95" y1="85" x2="60" y2="135"/><line x1="95" y1="85" x2="130" y2="135"/><line x1="225" y1="85" x2="200" y2="135"/></g><g fill="#fff" stroke="#344054" stroke-width="2"><circle cx="160" cy="35" r="18"/><circle cx="95" cy="85" r="18"/><circle cx="225" cy="85" r="18"/><circle cx="60" cy="135" r="18"/><circle cx="130" cy="135" r="18"/><circle cx="200" cy="135" r="18"/></g><g font-size="13" fill="#111"><text x="154" y="40">99</text><text x="89" y="90">75</text><text x="219" y="90">64</text><text x="54" y="140">42</text><text x="124" y="140">30</text><text x="194" y="140">25</text></g></svg>
+            </div>
+            <div class="card-body">
+              <div class="kicker">현재 최댓값/최솟값 또는 Top-K를 반복 추출</div>
+              <h3>정렬 전체를 매번 하지 말기</h3>
+              <div class="tag">→ priority_queue</div>
+              <div class="why">중간 삭제가 필요하면 <b>lazy deletion + version</b>을 먼저 검토.</div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="range" data-key="segment tree fenwick 구간 합 최솟값 최댓값 query update">
+            <div class="visual" data-case="segment">
+              <svg viewBox="0 0 320 180"><g font-size="12" fill="#111"><rect x="25" y="45" width="270" height="35" fill="#fff" stroke="#344054"/><g stroke="#344054"><line x1="63" y1="45" x2="63" y2="80"/><line x1="101" y1="45" x2="101" y2="80"/><line x1="139" y1="45" x2="139" y2="80"/><line x1="177" y1="45" x2="177" y2="80"/><line x1="215" y1="45" x2="215" y2="80"/><line x1="253" y1="45" x2="253" y2="80"/></g><text x="41" y="67">2</text><text x="79" y="67">1</text><text x="117" y="67">5</text><text x="155" y="67">3</text><text x="193" y="67">7</text><text x="231" y="67">9</text><text x="269" y="67">11</text></g><path d="M63 105 H215 M63 105 V117 M215 105 V117" stroke="#7a5af8" stroke-width="3"/><text x="118" y="135" font-size="13" fill="#111">구간 [1, 5] 질의</text></svg>
+            </div>
+            <div class="card-body">
+              <div class="kicker">값 변경 + 구간 합/최소/최대 질의가 반복</div>
+              <h3>배열 전체를 매번 순회하지 않기</h3>
+              <div class="tag">→ Segment Tree / Fenwick</div>
+              <div class="why">합만 필요하면 Fenwick이 단순. 복합 정보면 Segment Tree.</div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="string api" data-key="trie prefix 문자열 자동완성 사전">
+            <div class="visual" data-case="trie">
+              <svg viewBox="0 0 320 180"><g stroke="#667085" stroke-width="2"><line x1="160" y1="30" x2="95" y2="75"/><line x1="160" y1="30" x2="225" y2="75"/><line x1="95" y1="75" x2="60" y2="125"/><line x1="95" y1="75" x2="125" y2="125"/></g><g fill="#fff" stroke="#344054" stroke-width="2"><circle cx="160" cy="30" r="16"/><circle cx="95" cy="75" r="16"/><circle cx="225" cy="75" r="16"/><circle cx="60" cy="125" r="16"/><circle cx="125" cy="125" r="16"/></g><g font-size="13" fill="#111"><text x="90" y="80">a</text><text x="220" y="80">b</text><text x="55" y="130">p</text><text x="120" y="130">t</text></g></svg>
+            </div>
+            <div class="card-body">
+              <div class="kicker">접두사 기준 검색 / 자동완성 / prefix 집계</div>
+              <h3>문자열 전체 비교를 반복하지 않기</h3>
+              <div class="tag">→ Trie</div>
+              <div class="why">노드에 <code>cnt</code>, <code>bestId</code> 같은 집계값을 함께 저장.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><h2>유형별 C++ 실전 팁</h2><p>검색과 좌측 메뉴로 필요한 유형만 골라 볼 수 있습니다.</p></div>
+        <div class="details">
+          <article class="detail" data-cat="api order" data-key="unordered_map set index 갱신 원본 저장소 보조 인덱스">
+            <h3>원본 저장소 + 보조 인덱스</h3>
+            <p>한 객체를 ID로 찾기도 하고, 점수/시간/우선순위 순으로도 찾아야 한다면 저장소를 하나만 두지 않습니다.</p>
+            <div class="code">unordered_map&lt;int, Data&gt; byId;
+set&lt;tuple&lt;int,int,int&gt;&gt; byPriority;</div>
+            <div class="logic"><b>실전 포인트:</b> 값이 바뀔 때는 <code>erase → 값 변경 → insert</code>. 그리고 아래 의사 카드의 “원본 저장소 + 보조 인덱스” 케이스 이미지를 클릭하면 더 긴 예시 코드를 볼 수 있습니다.</div>
+            <div style="margin-top:12px"><button class="iconbtn open-case" data-case="apiindex">예시 코드 보기</button></div>
+          </article>
+
+          <article class="detail" data-cat="api order" data-key="lazy deletion priority queue version delete update">
+            <h3>Priority Queue + Lazy Deletion</h3>
+            <p>PQ는 중간 삭제가 불편합니다. 오래된 노드를 남겨둔 뒤 top에서 걸러냅니다.</p>
+            <div class="code">if (removed[id] || ver != version[id]) pop();</div>
+            <div class="logic"><span class="badge">자주 나옴</span> 값 변경 시 version 증가 후 새 노드를 push. “왜 삭제 안 하고 그냥 두지?”를 이해하는 것이 중요합니다.</div>
+            <div style="margin-top:12px"><button class="iconbtn open-case" data-case="pq">예시 코드 보기</button></div>
+          </article>
+
+          <article class="detail" data-cat="graph shortest" data-key="bfs dijkstra 차이 격자 비용">
+            <h3>BFS vs Dijkstra 구분</h3>
+            <ul>
+              <li><b>BFS:</b> 모든 간선 비용 동일</li>
+              <li><b>Dijkstra:</b> 비용이 서로 다르지만 음수는 없음</li>
+              <li><b>0-1 BFS:</b> 비용이 0 또는 1</li>
+            </ul>
+            <div class="logic">격자 그림이 나왔다고 BFS 확정이 아닙니다. “높이 차이”, “스태미나”, “통행료” 문장을 찾으세요.</div>
+          </article>
+
+          <article class="detail" data-cat="api" data-key="시간복잡도 호출 횟수 query 전체순회">
+            <h3>API 호출 횟수부터 역산</h3>
+            <p>예: query 10,000번 × 데이터 100,000개 전체 순회 = 최대 10억 수준.</p>
+            <div class="logic"><b>핵심 질문:</b> query를 빠르게 만들기 위해 add/update 시점에 미리 인덱스를 유지할 수 있는가?</div>
+          </article>
+        </div>
+      </section>
+
+
+
+      <section id="btype-stl-groups">
+        <div class="section-head">
+          <h2>🔥 B형에서 바로 쓰는 STL 선택 가이드</h2>
+          <p>비슷한 STL끼리 비교하고, 클릭하면 실제 API형 풀이 패턴까지 확인합니다.</p>
+        </div>
+        <div class="callout" style="margin-bottom:18px">
+          <b>문제 풀이 순서:</b>
+          문제 문장 속 <b>조회 기준</b>을 찾고 → 그 기준마다 필요한 인덱스를 정하고 →
+          <b>add / remove / query 호출 횟수</b>를 곱해 시간복잡도를 검증합니다.
+          STL은 그 다음에 선택합니다.
+        </div>
+        <div class="group-grid">
+
+          <article class="group-card" data-group="set_compare">
+            <h3>🧺 unordered_set / set</h3>
+            <p>존재 여부만 빠르게 볼 것인가, 정렬 순서까지 필요할 것인가?</p>
+            <div class="mini"><span>“해당 ID가 현재 존재하는가?”</span><span>“가장 작은/큰 값”, “정렬 순서”, “lower_bound”</span><span>삭제/삽입이 계속 발생하면서 중복 없는 후보군을 관리</span></div>
+          </article>
+          <article class="group-card" data-group="map_compare">
+            <h3>🗂️ unordered_map / map</h3>
+            <p>ID → 객체를 O(1)에 찾을 것인가, Key 정렬까지 유지할 것인가?</p>
+            <div class="mini"><span>mID, 주문번호, 객체 ID로 구조체를 바로 찾아야 함</span><span>Key 순서대로 순회하거나 lower_bound가 필요</span><span>B형 API에서 원본 저장소 역할로 가장 자주 쓰는 조합</span></div>
+          </article>
+          <article class="group-card" data-group="sequence_compare">
+            <h3>📦 vector / deque / list</h3>
+            <p>연속 순회, 양끝 처리, 중간 삭제 중 무엇이 핵심인가?</p>
+            <div class="mini"><span>순회/인덱스 접근이 많음</span><span>앞/뒤 삽입·삭제가 모두 많음</span><span>특정 위치(iterator)를 이미 알고 있고 중간 삭제가 매우 잦음</span></div>
+          </article>
+          <article class="group-card" data-group="queue_compare">
+            <h3>🚦 queue / deque / priority_queue</h3>
+            <p>들어온 순서인가, 0/1 비용인가, 우선순위인가?</p>
+            <div class="mini"><span>모든 간선 비용 동일 + 최단거리</span><span>가중치가 0/1</span><span>가장 작은 비용/가장 높은 우선순위를 반복 추출</span></div>
+          </article>
+          <article class="group-card" data-group="pair_tuple">
+            <h3>🧩 pair / tuple</h3>
+            <p>문제의 우선순위 문장을 그대로 자료형으로 옮기기</p>
+            <div class="mini"><span>좌표 {r,c}, 간선 {next,weight}, 다익스트라 {cost,node}</span><span>우선순위 조건이 3개 이상</span><span>set / priority_queue에서 custom comparator를 줄이고 싶음</span></div>
+          </article>
+          <article class="group-card" data-group="algorithm_compare">
+            <h3>🛠️ find / lower_bound / remove / sort</h3>
+            <p>STL 알고리즘을 쓰기 전에 컨테이너와 호출 횟수를 같이 보기</p>
+            <div class="mini"><span>한 번 정렬 후 여러 이분 탐색</span><span>특정 값 전체 삭제</span><span>단순 선형 탐색</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="stl-cheatsheet">
+        <div class="section-head">
+          <h2 id="cheatTitle">📚 B형 C++ STL 치트시트</h2>
+          <p>템플릿 인자 → 시간복잡도 → 언제 쓰는지 → 실전 함정까지. 카드를 클릭하면 상세 코드가 열립니다.</p>
+        </div>
+        <div class="callout" style="margin-bottom:18px">
+          <b>STL 선택 기준:</b> 각 카드의 상세 창에는 <b>주요 멤버 함수·알고리즘·시간복잡도·주의점</b>을 표로 정리했습니다.<br><br><b>빠른 선택:</b>
+          ID로 즉시 찾기 → <code>unordered_map</code> ·
+          정렬 유지 → <code>set/map</code> ·
+          최상위 반복 추출 → <code>priority_queue</code> ·
+          BFS → <code>queue</code> ·
+          0-1 BFS → <code>deque</code>.
+          B형에서는 한 자료구조만 고집하기보다 <b>원본 저장소 + 조회 기준별 보조 인덱스</b>를 조합하는 경우가 많습니다.
+        </div>
+        <div class="stl-grid">
+
+          <article class="stl-card" data-cat="stl api" data-key="unordered_map unordered_map<int, Data> Key → Value 해시 조회" data-case="unordered_map">
+            <h3>unordered / map</h3>
+            <div class="sig">unordered_map&lt;int, Data&gt;</div>
+            <div class="desc">Key → Value 해시 조회</div>
+            <span class="cx">평균 조회/삽입/삭제 O(1)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl order" data-key="map map<int, Data> Key → Value + Key 정렬" data-case="map">
+            <h3>map</h3>
+            <div class="sig">map&lt;int, Data&gt;</div>
+            <div class="desc">Key → Value + Key 정렬</div>
+            <span class="cx">O(log N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl order" data-key="set set<tuple<int,int,int>> 중복 없는 정렬 인덱스" data-case="set">
+            <h3>set</h3>
+            <div class="sig">set&lt;tuple&lt;int,int,int&gt;&gt;</div>
+            <div class="desc">중복 없는 정렬 인덱스</div>
+            <span class="cx">O(log N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl order" data-key="pair pair<int,int> 2개 값을 묶고 사전식 비교" data-case="pair">
+            <h3>pair</h3>
+            <div class="sig">pair&lt;int,int&gt;</div>
+            <div class="desc">2개 값을 묶고 사전식 비교</div>
+            <span class="cx">비교 O(1)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl order" data-key="tuple tuple<int,int,int> 3개 이상 복합 우선순위" data-case="tuple">
+            <h3>tuple</h3>
+            <div class="sig">tuple&lt;int,int,int&gt;</div>
+            <div class="desc">3개 이상 복합 우선순위</div>
+            <span class="cx">비교 O(1)*</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl order" data-key="priority_queue priority_queue<T> Top 1 / Top-K Heap" data-case="priority_queue">
+            <h3>priority / queue</h3>
+            <div class="sig">priority_queue&lt;T&gt;</div>
+            <div class="desc">Top 1 / Top-K Heap</div>
+            <span class="cx">top O(1), push/pop O(log N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl api" data-key="vector vector<T> 동적 배열 / 인접 리스트" data-case="vector">
+            <h3>vector</h3>
+            <div class="sig">vector&lt;T&gt;</div>
+            <div class="desc">동적 배열 / 인접 리스트</div>
+            <span class="cx">접근 O(1), 중간삭제 O(N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl shortest" data-key="deque deque<T> 앞·뒤 삽입/삭제 + erase/remove" data-case="deque">
+            <h3>deque</h3>
+            <div class="sig">deque&lt;T&gt;</div>
+            <div class="desc">앞·뒤 삽입/삭제 + erase/remove</div>
+            <span class="cx">양끝 O(1)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl graph" data-key="queue queue<T> FIFO / BFS" data-case="queue">
+            <h3>queue</h3>
+            <div class="sig">queue&lt;T&gt;</div>
+            <div class="desc">FIFO / BFS</div>
+            <span class="cx">push/pop O(1)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl sim" data-key="stack stack<T> LIFO / DFS·파싱" data-case="stack">
+            <h3>stack</h3>
+            <div class="sig">stack&lt;T&gt;</div>
+            <div class="desc">LIFO / DFS·파싱</div>
+            <span class="cx">push/pop O(1)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl api" data-key="list list<T> iterator 기반 중간 삭제" data-case="list">
+            <h3>list</h3>
+            <div class="sig">list&lt;T&gt;</div>
+            <div class="desc">iterator 기반 중간 삭제</div>
+            <span class="cx">iterator erase O(1)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl api" data-key="unordered_set unordered_set<int> 존재 여부 해시 집합" data-case="unordered_set">
+            <h3>unordered / set</h3>
+            <div class="sig">unordered_set&lt;int&gt;</div>
+            <div class="desc">존재 여부 해시 집합</div>
+            <span class="cx">평균 O(1)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl order" data-key="multiset multiset<int> 중복 허용 정렬 집합" data-case="multiset">
+            <h3>multiset</h3>
+            <div class="sig">multiset&lt;int&gt;</div>
+            <div class="desc">중복 허용 정렬 집합</div>
+            <span class="cx">O(log N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl order" data-key="sort sort(v.begin(), v.end()) 배열/vector 정렬" data-case="sort">
+            <h3>sort</h3>
+            <div class="sig">sort(v.begin(), v.end())</div>
+            <div class="desc">배열/vector 정렬</div>
+            <span class="cx">O(N log N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl order" data-key="bounds lower_bound / upper_bound 정렬 데이터 경계 탐색" data-case="bounds">
+            <h3>bounds</h3>
+            <div class="sig">lower_bound / upper_bound</div>
+            <div class="desc">정렬 데이터 경계 탐색</div>
+            <span class="cx">O(log N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl api" data-key="remove_erase erase(remove(...), end()) vector 특정 값 전체 삭제" data-case="remove_erase">
+            <h3>remove / erase</h3>
+            <div class="sig">erase(remove(...), end())</div>
+            <div class="desc">vector 특정 값 전체 삭제</div>
+            <span class="cx">O(N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl api" data-key="find_algo find(begin, end, x) 순차 탐색" data-case="find_algo">
+            <h3>find / algo</h3>
+            <div class="sig">find(begin, end, x)</div>
+            <div class="desc">순차 탐색</div>
+            <span class="cx">O(N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl sim" data-key="fill_memset fill / memset 배열 초기화" data-case="fill_memset">
+            <h3>fill / memset</h3>
+            <div class="sig">fill / memset</div>
+            <div class="desc">배열 초기화</div>
+            <span class="cx">O(N)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl sim" data-key="array array<int, 4> 고정 크기 STL 배열" data-case="array">
+            <h3>array</h3>
+            <div class="sig">array&lt;int, 4&gt;</div>
+            <div class="desc">고정 크기 STL 배열</div>
+            <span class="cx">접근 O(1)</span>
+            <span class="openhint">클릭 → 상세 예시</span>
+          </article>
+          <article class="stl-card" data-cat="stl" data-key="string string s 문자열 저장·검색·삽입·삭제" data-case="string">
+            <h3>string</h3>
+            <div class="sig">string s</div>
+            <div class="desc">문자열 저장·검색·삽입·삭제</div>
+            <span class="cx">접근 O(1), 중간 수정 O(N)</span>
+            <span class="openhint">클릭 → 함수 전체 보기</span>
+          </article>
+          <article class="stl-card" data-cat="stl" data-key="bitset bitset<128> 고정 길이 비트 집합" data-case="bitset">
+            <h3>bitset</h3>
+            <div class="sig">bitset&lt;128&gt;</div>
+            <div class="desc">고정 길이 비트 집합</div>
+            <span class="cx">단일 bit O(1)</span>
+            <span class="openhint">클릭 → 함수 전체 보기</span>
+          </article>
+          <article class="stl-card" data-cat="stl" data-key="numeric accumulate / iota / gcd 누적합·초기값·수학" data-case="numeric">
+            <h3>numeric</h3>
+            <div class="sig">accumulate / iota / gcd</div>
+            <div class="desc">누적합·초기값·수학</div>
+            <span class="cx">대부분 O(N) 또는 O(log N)</span>
+            <span class="openhint">클릭 → 함수 전체 보기</span>
+          </article>
+          <article class="stl-card" data-cat="stl" data-key="algorithm reverse / unique / permutation 기타 자주 쓰는 algorithm" data-case="algorithm_misc">
+            <h3>algorithm / misc</h3>
+            <div class="sig">reverse / unique / permutation</div>
+            <div class="desc">기타 자주 쓰는 algorithm</div>
+            <span class="cx">함수별 상이</span>
+            <span class="openhint">클릭 → 함수 전체 보기</span>
+          </article>
+        </div>
+      </section>
+
+      <div class="footer">B형(Pro) 대비용 개인 학습 사이트 · 이미지 클릭 → 코드 예시 / 해설</div>
+    </div>
+  </main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <div id="modalTitle" style="font-size:22px;font-weight:800"></div>
+        <div id="modalProblem" style="color:var(--muted);margin-top:6px"></div>
+      </div>
+      <button class="modal-close" id="closeModal">닫기 ✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div id="modalPills"></div>
+        <div class="code" id="modalCode"></div>
+      </div>
+      <div>
+        <div class="note">
+          <h4>추가 해설</h4>
+          <ul id="modalExplain"></ul>
+        </div>
+        <div class="note">
+          <h4>이 케이스에서 먼저 볼 것</h4>
+          <ul id="modalKey"></ul>
+        </div>
+        <div class="note method-table-wrap" id="methodSection" style="display:none">
+          <h4>주요 함수 / 연산 / 시간복잡도</h4>
+          <div class="method-legend">
+            <span class="pill">문법</span>
+            <span class="pill">기능</span>
+            <span class="pill">복잡도</span>
+            <span class="pill">B형 주의점</span>
+          </div>
+          <div style="overflow:auto">
+            <table class="method-table">
+              <thead><tr><th>문법</th><th>의미</th><th>복잡도</th><th>메모</th></tr></thead>
+              <tbody id="methodRows"></tbody>
+            </table>
+          </div>
+          <div class="method-note">※ 복잡도는 해당 언어의 일반적인 표준 라이브러리/컨테이너 구현을 기준으로 한 실전용 요약입니다. 해시 계열은 평균과 최악 복잡도가 다를 수 있습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="groupModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <div id="groupTitle" style="font-size:23px;font-weight:800"></div>
+        <div id="groupSubtitle" style="color:var(--muted);margin-top:6px"></div>
+      </div>
+      <button class="modal-close" id="closeGroupModal">닫기 ✕</button>
+    </div>
+    <div style="padding:20px">
+      <div class="btype-modal-section">
+        <h4>👀 문제에서 이런 표현이 보이면</h4>
+        <ul id="groupSignals"></ul>
+      </div>
+
+      <div class="btype-modal-section">
+        <h4>🧱 기본 선언 / 템플릿 형태</h4>
+        <div class="template-box" id="groupTemplate"></div>
+      </div>
+
+      <div class="btype-modal-section">
+        <h4>⏱️ 핵심 시간복잡도</h4>
+        <div class="complexity-grid" id="groupComplexity"></div>
+      </div>
+
+      <div class="btype-modal-section">
+        <h4>💻 실제 B형 풀이 스타일 코드</h4>
+        <div class="code" id="groupCode"></div>
+      </div>
+
+      <div class="btype-modal-section">
+        <h4>⚠️ 시험에서 자주 하는 실수</h4>
+        <ul id="groupPitfalls"></ul>
+      </div>
+
+      <div class="choice-box">
+        <b>결론 — 무엇을 고를까?</b><br>
+        <span id="groupChoice"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const CASES = {"grid":{"title":"격자 최단거리 / BFS vs 다익스트라","problem":"예시 상황: 격자에서 시작점→도착점, 상하좌우 이동. 이동 비용이 모두 1이면 BFS, 칸/간선마다 비용이 다르면 다익스트라.","key":["핵심 질문 1: 이동 비용이 전부 같은가?","핵심 질문 2: dist 배열이 필요한가, 단순 visited로 충분한가?","핵심 질문 3: 한 칸에 여러 번 더 좋은 비용으로 다시 들어올 수 있는가?"],"code":"// [Case] 격자 최단거리\n// 비용이 모두 1이면 BFS\nint bfs(int sr, int sc, int er, int ec) {\n    static int dist[351][351];\n    memset(dist, -1, sizeof(dist));\n\n    queue<pair<int,int>> q;\n    q.push({sr, sc});\n    dist[sr][sc] = 0;\n\n    while (!q.empty()) {\n        auto [r, c] = q.front();\n        q.pop();\n\n        if (r == er && c == ec) return dist[r][c];\n\n        for (int d = 0; d < 4; d++) {\n            int nr = r + dr[d];\n            int nc = c + dc[d];\n\n            if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;\n            if (board[nr][nc] == WALL) continue;\n            if (dist[nr][nc] != -1) continue;\n\n            dist[nr][nc] = dist[r][c] + 1;\n            q.push({nr, nc});\n        }\n    }\n    return -1;\n}\n\n// 비용이 다르면 다익스트라\nint dijkstra(int sr, int sc, int er, int ec) {\n    const int INF = 1e9;\n    static int dist[351][351];\n    for (int i = 0; i < N; i++)\n        for (int j = 0; j < N; j++)\n            dist[i][j] = INF;\n\n    using T = tuple<int,int,int>; // cost, r, c\n    priority_queue<T, vector<T>, greater<T>> pq;\n\n    dist[sr][sc] = 0;\n    pq.push({0, sr, sc});\n\n    while (!pq.empty()) {\n        auto [cost, r, c] = pq.top();\n        pq.pop();\n\n        if (cost != dist[r][c]) continue; // lazy deletion\n\n        for (int d = 0; d < 4; d++) {\n            int nr = r + dr[d];\n            int nc = c + dc[d];\n\n            if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;\n            if (board[nr][nc] == WALL) continue;\n\n            int nextCost = cost + weight[nr][nc];\n            if (dist[nr][nc] > nextCost) {\n                dist[nr][nc] = nextCost;\n                pq.push({nextCost, nr, nc});\n            }\n        }\n    }\n    return dist[er][ec];\n}","explain":["격자 그림이 보이면 많은 사람이 바로 BFS를 떠올리지만, B형에서는 ‘이동 비용’ 때문에 다익스트라로 바뀌는 경우가 매우 많습니다.","BFS는 같은 칸을 한 번만 방문해도 되지만, 다익스트라는 더 좋은 비용으로 다시 도달할 수 있으므로 dist 배열로 관리합니다.","다익스트라의 if (cost != dist[r][c]) continue; 는 우선순위 큐에서 오래된 상태를 걸러내는 lazy deletion 패턴입니다."]},"dijkstra":{"title":"가중 그래프 최단거리 / 다익스트라","problem":"예시 상황: 정점과 간선, 모든 간선 가중치가 0 이상. 여러 query에서 정점별 최소 비용을 구해야 함.","key":["정점별 최소 거리 dist[node]","우선순위 큐에는 (현재 비용, 정점)","오래된 항목 제거: cost != dist[cur]"],"code":"vector<pair<int,int>> graph[MAX_N]; // {next, weight}\nint dist[MAX_N];\n\nvoid runDijkstra(int start) {\n    const int INF = 1e9;\n    fill(dist, dist + MAX_N, INF);\n\n    using P = pair<int,int>; // cost, node\n    priority_queue<P, vector<P>, greater<P>> pq;\n\n    dist[start] = 0;\n    pq.push({0, start});\n\n    while (!pq.empty()) {\n        auto [cost, cur] = pq.top();\n        pq.pop();\n\n        if (cost != dist[cur]) continue;\n\n        for (auto [nxt, w] : graph[cur]) {\n            if (dist[nxt] > cost + w) {\n                dist[nxt] = cost + w;\n                pq.push({dist[nxt], nxt});\n            }\n        }\n    }\n}","explain":["B형에서는 한 번만 최단거리를 구하는 문제가 아니라, 특정 게이트/정점에서 여러 번 최소 시간을 구하는 구조로 나올 수 있습니다.","정점 수가 작으면 매 query마다 실행할 수 있지만, 크면 미리 압축하거나 그래프 자체를 다르게 모델링해야 합니다.","이 유형에서 중요한 것은 ‘현재 상태를 어떻게 정점으로 정의하느냐’입니다. 좌표, 게이트, 체력 상태까지 포함될 수도 있습니다."]},"zeroone":{"title":"가중치가 0/1뿐일 때 / 0-1 BFS","problem":"예시 상황: 간선 비용이 0 또는 1. 다익스트라 대신 deque로 더 가볍게 처리 가능.","key":["비용 0 → push_front","비용 1 → push_back","dist 배열은 다익스트라처럼 유지"],"code":"deque<int> dq;\nfill(dist, dist + N + 1, INF);\n\ndist[start] = 0;\ndq.push_back(start);\n\nwhile (!dq.empty()) {\n    int cur = dq.front();\n    dq.pop_front();\n\n    for (auto [nxt, w] : graph[cur]) {\n        if (dist[nxt] > dist[cur] + w) {\n            dist[nxt] = dist[cur] + w;\n\n            if (w == 0) dq.push_front(nxt);\n            else dq.push_back(nxt);\n        }\n    }\n}","explain":["0-1 BFS는 그림상으로는 그냥 가중 그래프처럼 보여도 ‘가중치 종류가 0과 1뿐’이라는 문장을 발견해야 떠올릴 수 있습니다.","priority_queue 없이 deque만으로 최단거리를 보장할 수 있어 구현이 간단하고 빠릅니다."]},"component":{"title":"연결 요소 / DFS·BFS","problem":"예시 상황: 섬 개수, 덩어리 개수, 연결된 그룹 수.","key":["방문하지 않은 정점에서 탐색 시작할 때마다 component++","격자 / 일반 그래프 둘 다 자주 등장","크기, 개수, 가장 큰 그룹 등 부가 정보도 함께 계산"],"code":"int compCnt = 0;\nint compSize[MAX_N];\nbool visited[MAX_N];\n\nvoid dfs(int cur, int idx) {\n    visited[cur] = true;\n    compSize[idx]++;\n\n    for (int nxt : graph[cur]) {\n        if (visited[nxt]) continue;\n        dfs(nxt, idx);\n    }\n}\n\nvoid findComponents(int n) {\n    memset(visited, 0, sizeof(visited));\n    memset(compSize, 0, sizeof(compSize));\n    compCnt = 0;\n\n    for (int i = 1; i <= n; i++) {\n        if (visited[i]) continue;\n        dfs(i, compCnt);\n        compCnt++;\n    }\n}","explain":["‘몇 개의 그룹인가?’가 핵심이면 최단거리보다 연결 요소 탐색일 확률이 높습니다.","B형에서는 연결 요소 개수뿐 아니라 각 그룹의 크기, 대표 번호, 내부 합계 등을 함께 관리하는 경우가 많습니다."]},"uf":{"title":"연결 여부가 자주 변하면 / Union-Find","problem":"예시 상황: 두 원소가 같은 집합인지 자주 확인, 집합을 합치는 연산이 매우 많음.","key":["find(x) = 대표자","union(a,b) = 대표자끼리 합치기","경로 압축 + union by size/rank"],"code":"int parent[MAX_N];\nint sz[MAX_N];\n\nvoid initUF(int n) {\n    for (int i = 1; i <= n; i++) {\n        parent[i] = i;\n        sz[i] = 1;\n    }\n}\n\nint findSet(int x) {\n    if (parent[x] == x) return x;\n    return parent[x] = findSet(parent[x]);\n}\n\nvoid unionSet(int a, int b) {\n    a = findSet(a);\n    b = findSet(b);\n    if (a == b) return;\n\n    if (sz[a] < sz[b]) swap(a, b);\n    parent[b] = a;\n    sz[a] += sz[b];\n}","explain":["모든 간선을 다시 탐색하며 연결 여부를 확인하면 비쌉니다. ‘합치기’와 ‘같은 집합인지’가 반복되면 Union-Find를 우선 검토합니다.","B형에서는 그룹 크기, 그룹 점수 합 등 대표자 기준의 부가정보를 함께 들고 가는 식으로 확장되는 경우가 많습니다."]},"pq":{"title":"최댓값/최솟값 반복 추출 / Priority Queue + Lazy Deletion","problem":"예시 상황: 추천 시스템, 주문 우선순위, 점수 상위 후보를 반복적으로 뽑음. 중간 삭제/갱신이 발생함.","key":["중간 삭제가 어려우면 lazy deletion","removed[id] 또는 version[id] 활용","임의 삭제가 꼭 필요하면 set도 비교"],"code":"struct Node {\n    int score;\n    int id;\n    int ver;\n\n    bool operator<(const Node& other) const {\n        if (score != other.score) return score < other.score;\n        return id > other.id; // score 큰 순, id 작은 순\n    }\n};\n\npriority_queue<Node> pq;\nint version[MAX_ID];\nbool removed[MAX_ID];\n\nvoid pushCandidate(int id, int score) {\n    version[id]++;\n    pq.push({score, id, version[id]});\n    removed[id] = false;\n}\n\nvoid eraseCandidate(int id) {\n    removed[id] = true;\n}\n\nint topCandidate() {\n    while (!pq.empty()) {\n        Node cur = pq.top();\n        if (removed[cur.id] || cur.ver != version[cur.id]) {\n            pq.pop();\n            continue;\n        }\n        return cur.id;\n    }\n    return -1;\n}","explain":["B형 API형 문제에서 가장 많이 터지는 지점 중 하나가 ‘우선순위가 바뀐 데이터를 PQ에서 어떻게 지우지?’입니다.","정답은 보통 ‘지우지 말고 top에서 걸러내기’입니다. removed / version 중 하나 또는 둘 다 사용합니다.","점수 갱신이 잦고 정확한 삭제가 중요하면 set<pair<...>>가 더 편할 수 있습니다."]},"segment":{"title":"구간 질의 + 값 갱신 / Segment Tree & Fenwick","problem":"예시 상황: 점수가 바뀌는데 구간 합/최솟값/최댓값을 자주 질의.","key":["합만 필요하면 Fenwick이 가볍다","최솟값/최댓값/복합 정보면 Segment Tree","update와 query의 호출 수를 함께 보기"],"code":"// Fenwick Tree: point update + prefix sum\nint tree[MAX_N];\nint arr[MAX_N];\n\nvoid update(int idx, int diff) {\n    while (idx <= N) {\n        tree[idx] += diff;\n        idx += (idx & -idx);\n    }\n}\n\nint prefixSum(int idx) {\n    int ret = 0;\n    while (idx > 0) {\n        ret += tree[idx];\n        idx -= (idx & -idx);\n    }\n    return ret;\n}\n\nint rangeSum(int l, int r) {\n    return prefixSum(r) - prefixSum(l - 1);\n}","explain":["배열 그림과 함께 ‘구간 합을 여러 번 구하라’, ‘업데이트도 있다’가 보이면 전체 순회를 버리고 Segment Tree/Fenwick을 먼저 떠올립니다.","Fenwick은 구현이 짧아 시험장에서 특히 유리합니다."]},"trie":{"title":"접두사 검색 / Trie","problem":"예시 상황: 자동완성, prefix 개수 세기, 사전 검색.","key":["child[문자]","prefix별 집계값을 함께 저장","query 때 하위 전체를 다시 탐색하지 않기"],"code":"struct TrieNode {\n    int child[26];\n    int cnt;\n    bool finish;\n} trie[MAX_NODE];\n\nint nodeCnt;\n\nvoid initTrie() {\n    memset(trie, 0, sizeof(trie));\n    nodeCnt = 0;\n}\n\nvoid insertWord(const string& s) {\n    int cur = 0;\n    for (char ch : s) {\n        int c = ch - 'a';\n        if (trie[cur].child[c] == 0) {\n            trie[cur].child[c] = ++nodeCnt;\n        }\n        cur = trie[cur].child[c];\n        trie[cur].cnt++;\n    }\n    trie[cur].finish = true;\n}\n\nint countPrefix(const string& p) {\n    int cur = 0;\n    for (char ch : p) {\n        int c = ch - 'a';\n        if (trie[cur].child[c] == 0) return 0;\n        cur = trie[cur].child[c];\n    }\n    return trie[cur].cnt;\n}","explain":["B형에서는 단순 삽입/검색보다 ‘이 prefix에서 가장 우선순위 높은 후보’, ‘개수’, ‘합계’를 같이 물어보는 식으로 자주 나옵니다.","그래서 노드에 finish만 두는 것이 아니라 cnt / bestId / sum 등 문제 맞춤 정보를 저장하는 습관이 중요합니다."]},"apiindex":{"title":"원본 저장소 + 보조 인덱스","problem":"예시 상황: mID로 객체 조회도 하고, 우선순위/점수/시간 순 조회도 해야 함.","key":["원본 저장소: byId","보조 인덱스: set / map / priority_queue","값 변경 시 인덱스 갱신 순서가 중요"],"code":"struct Data {\n    int id;\n    int score;\n    int time;\n};\n\nunordered_map<int, Data> byId;\nset<tuple<int,int,int>> byOrder; // score, time, id\n\nvoid addData(int id, int score, int time) {\n    byId[id] = {id, score, time};\n    byOrder.insert({score, time, id});\n}\n\nvoid updateScore(int id, int newScore) {\n    Data &cur = byId[id];\n    byOrder.erase({cur.score, cur.time, cur.id});\n    cur.score = newScore;\n    byOrder.insert({cur.score, cur.time, cur.id});\n}\n\nint getBestId() {\n    if (byOrder.empty()) return -1;\n    return get<2>(*byOrder.begin());\n}","explain":["B형에서 가장 실전적인 패턴입니다. 데이터를 한 군데만 저장하려고 하면 query 성능이 무너집니다.","‘query를 빠르게 하기 위해 add/update 시점에 미리 정렬 상태를 유지한다’는 사고가 핵심입니다."]},"sim":{"title":"구현·시뮬레이션 / 좌표 정규화","problem":"예시 상황: 원자 충돌, 반 칸 이동, 시간 단위 시뮬레이션.","key":["좌표를 정수로 바꿀 수 있는가?","매 step마다 O(N²) 비교를 피할 수 있는가?","상태를 map / bucket에 묶을 수 있는가?"],"code":"// 좌표를 2배로 확대해 0.5 이동을 정수로 표현\nfor (int i = 0; i < M; i++) {\n    atoms[i].x *= 2;\n    atoms[i].y *= 2;\n}\n\nunordered_map<long long, vector<int>> bucket;\n\nlong long encode(int x, int y) {\n    return ( (long long)x << 32 ) ^ (unsigned int)y;\n}\n\nvoid moveAll() {\n    bucket.clear();\n\n    for (int i = 0; i < M; i++) {\n        if (!alive[i]) continue;\n\n        atoms[i].x += dx[atoms[i].dir];\n        atoms[i].y += dy[atoms[i].dir];\n\n        long long key = encode(atoms[i].x, atoms[i].y);\n        bucket[key].push_back(i);\n    }\n\n    for (auto &kv : bucket) {\n        if (kv.second.size() >= 2) {\n            for (int idx : kv.second) alive[idx] = false;\n        }\n    }\n}","explain":["시뮬레이션 문제는 알고리즘보다도 ‘표현’을 바꾸는 순간 풀리는 경우가 많습니다.","0.5 이동 → 좌표 2배, 모든 쌍 비교 → 같은 좌표끼리 bucket 묶기 같은 발상이 대표적입니다."]},"unordered_map":{"title":"unordered_map — ID → 데이터 빠른 조회","problem":"B형에서 mID, 주문번호, 객체 ID처럼 '키로 바로 객체를 찾아야 하는' 경우 가장 자주 쓰는 해시 기반 컨테이너.","key":["형식: unordered_map<Key, Value>","첫 번째 인자 Key = 검색 기준, 두 번째 인자 Value = 저장할 데이터","find / insert / erase 평균 O(1), 최악 O(N)","존재 확인만 할 때 operator[] 사용 주의"],"code":"#include <unordered_map>\n\nstruct Order {\n    int remain;\n    int time;\n};\n\n// Key: 주문 ID(int)\n// Value: 주문 정보(Order)\nunordered_map<int, Order> orders;\n\nvoid addOrder(int mID, int remain, int time) {\n    orders[mID] = {remain, time};   // 평균 O(1)\n}\n\nbool exists(int mID) {\n    return orders.find(mID) != orders.end(); // 평균 O(1)\n}\n\nvoid updateOrder(int mID) {\n    auto it = orders.find(mID);\n    if (it == orders.end()) return;\n\n    // 복사하지 않고 실제 Value를 참조\n    Order& cur = it->second;\n    cur.remain--;\n}\n\nvoid removeOrder(int mID) {\n    orders.erase(mID); // 평균 O(1)\n}","explain":["unordered_map<int, Order>에서 int는 key 타입, Order는 value 타입입니다.","orders[mID]는 key가 없으면 새 원소를 생성합니다. 단순 존재 확인은 find()가 안전합니다.","ID 범위가 작고 최대값이 명확하면 unordered_map보다 배열 data[mID]가 더 빠르고 단순할 수 있습니다.","B형에서는 원본 데이터 저장소로 unordered_map을 두고, 정렬용 set/PQ를 별도 보조 인덱스로 두는 조합이 매우 자주 나옵니다."],"methods":[["mp[key]","key의 value 접근. 없으면 새 원소 생성","평균 O(1)","존재 확인 용도로 쓰면 데이터가 생기는 점 주의"],["mp.at(key)","존재하는 key의 value 접근","평균 O(1)","없으면 예외 발생. 삼성 시험 코드는 보통 find를 더 많이 사용"],["mp.find(key)","key 탐색. 없으면 end()","평균 O(1), 최악 O(N)","존재 확인의 기본"],["mp.count(key)","key 개수 반환(0 또는 1)","평균 O(1)","단순 존재 여부에 편함"],["mp.insert({k,v})","원소 삽입","평균 O(1)","이미 key가 있으면 기본 insert는 덮어쓰지 않음"],["mp.emplace(k,v)","원소를 컨테이너 내부에서 생성","평균 O(1)","불필요한 임시 객체를 줄일 수 있음"],["mp.erase(key)","key 원소 삭제","평균 O(1)","삭제된 개수 반환"],["mp.erase(it)","iterator가 가리키는 원소 삭제","평균 O(1)","find 결과를 바로 지울 때 사용"],["mp.clear()","전체 삭제","O(N)","init()마다 큰 map clear 비용도 고려"],["mp.size()","원소 개수","O(1)",""],["mp.empty()","비어 있는지","O(1)",""],["mp.reserve(n)","bucket을 미리 확보","평균 O(N) 재배치 가능","대량 삽입 시 rehash 횟수 감소에 유용"],["mp.rehash(n)","bucket 수 재설정","평균 O(N)","보통 직접 쓸 일은 reserve보다 적음"],["mp.load_factor()","현재 load factor","O(1)","해시 성능 튜닝 시 확인"],["mp.max_load_factor(x)","rehash 기준 설정","O(1)","고급 최적화용"],["mp.swap(other)","두 map 교환","대체로 O(1)","빠른 초기화 패턴으로 빈 컨테이너와 swap 가능"]]},"map":{"title":"map — Key 정렬 + Key→Value","problem":"Key로 찾으면서 Key 순서까지 유지해야 할 때. 내부적으로 균형 BST 계열이라 연산이 O(log N).","key":["형식: map<Key, Value>","Key 기준 자동 오름차순 정렬","find / insert / erase O(log N)","begin() = 가장 작은 Key, rbegin() = 가장 큰 Key"],"code":"#include <map>\n\nmap<int, int> scoreById;\n\nscoreById[30] = 100;\nscoreById[10] = 200;\nscoreById[20] = 150;\n\n// Key가 10 -> 20 -> 30 순서로 순회\nfor (auto& [id, score] : scoreById) {\n    // ...\n}\n\nauto minIt = scoreById.begin();   // 가장 작은 Key\nauto maxIt = scoreById.rbegin();  // 가장 큰 Key","explain":["unordered_map과 사용법은 비슷하지만 map은 Key 정렬 상태를 유지합니다.","단순 ID 조회만 필요하면 평균 O(1)인 unordered_map이 보통 더 적합합니다.","lower_bound / upper_bound 같은 순서 기반 탐색이 필요하면 map이 강합니다."],"methods":[["mp[key]","key의 value 접근/삽입","O(log N)","없는 key면 새 원소 생성"],["mp.at(key)","존재 key 접근","O(log N)","없으면 예외"],["mp.find(key)","key 탐색","O(log N)",""],["mp.count(key)","key 존재 개수(0/1)","O(log N)",""],["mp.insert({k,v})","삽입","O(log N)",""],["mp.emplace(k,v)","제자리 생성","O(log N)",""],["mp.erase(key)","key 삭제","O(log N)",""],["mp.erase(it)","iterator 삭제","상각 O(1)","이미 위치를 알면 빠름"],["mp.lower_bound(x)","x 이상 첫 key","O(log N)","범위 검색에 매우 유용"],["mp.upper_bound(x)","x 초과 첫 key","O(log N)",""],["mp.equal_range(x)","lower/upper 범위 동시 반환","O(log N)",""],["mp.begin()/rbegin()","최소/최대 key","O(1)",""],["mp.clear()","전체 삭제","O(N)",""],["mp.size()/empty()","크기/비었는지","O(1)",""],["mp.swap(other)","교환","대체로 O(1)",""]]},"set":{"title":"set — 중복 없는 정렬 인덱스","problem":"최솟값/최댓값 또는 복합 우선순위를 계속 유지하면서 특정 원소를 정확히 삭제해야 할 때.","key":["형식: set<T>","중복 허용 X, 자동 정렬","insert / erase / find O(log N)","begin() 최소, rbegin() 최대"],"code":"#include <set>\n\n// {남은 작업 수, 주문 시간, ID}\nset<tuple<int,int,int>> hurry;\n\nhurry.insert({3, 10, 1001});\nhurry.insert({1, 15, 1002});\n\n// 가장 급한 주문\nauto [remain, time, id] = *hurry.begin();\n\n// 값이 바뀌면 반드시\nhurry.erase({remain, time, id});\nremain--;\nhurry.insert({remain, time, id});","explain":["set에 들어간 정렬 기준 값은 객체 바깥에서 변경해도 set 내부 순서가 자동 갱신되지 않습니다.","따라서 '기존 key erase → 값 변경 → 새 key insert' 패턴을 기억하면 좋습니다.","중복 값이 필요하면 multiset을 고려합니다."],"methods":[["s.insert(x)","원소 삽입","O(log N)","중복이면 삽입 안 됨"],["s.emplace(args...)","제자리 생성","O(log N)",""],["s.find(x)","원소 탐색","O(log N)",""],["s.count(x)","존재 개수(0/1)","O(log N)",""],["s.erase(x)","값 삭제","O(log N)",""],["s.erase(it)","iterator 위치 삭제","상각 O(1)",""],["s.erase(first,last)","범위 삭제","O(log N + K) 정도","K는 삭제 원소 수"],["s.lower_bound(x)","x 이상 첫 원소","O(log N)",""],["s.upper_bound(x)","x 초과 첫 원소","O(log N)",""],["s.equal_range(x)","lower/upper 동시 반환","O(log N)",""],["*s.begin()","최솟값","O(1)",""],["*s.rbegin()","최댓값","O(1)",""],["s.clear()","전체 삭제","O(N)",""],["s.size()/empty()","크기/비었는지","O(1)",""],["s.swap(other)","교환","대체로 O(1)",""]]},"pair":{"title":"pair — 두 값을 한 묶음으로","problem":"좌표, {거리, 정점}, {점수, ID}처럼 2개의 값을 함께 다룰 때.","key":["형식: pair<T1, T2>","first → 같으면 second 순서로 비교","STL의 정렬/PQ/set과 조합하기 좋음"],"code":"#include <utility>\n\npair<int,int> p = {10, 20};\n\nint a = p.first;\nint b = p.second;\n\n// 구조적 바인딩\nauto [x, y] = p;\n\n// 다익스트라에서 매우 자주 사용\nusing P = pair<int,int>; // {dist, node}\npriority_queue<P, vector<P>, greater<P>> pq;","explain":["pair는 기본 비교 연산이 사전식입니다. first가 우선이고 같으면 second를 비교합니다.","우선순위 조건이 2개라면 custom comparator 없이 pair만으로 해결되는 경우가 많습니다."],"methods":[["p.first","첫 번째 값","O(1)",""],["p.second","두 번째 값","O(1)",""],["make_pair(a,b)","pair 생성","O(1)","C++11 이후 {a,b}도 자주 사용"],["auto [a,b]=p","구조적 바인딩","O(1)","C++17"],["비교 연산","first → second 사전식 비교","O(1)","set/PQ 정렬에 그대로 활용"]]},"tuple":{"title":"tuple — 3개 이상의 복합 우선순위","problem":"남은 개수 → 시간 → ID처럼 우선순위 조건이 여러 단계일 때.","key":["형식: tuple<T1, T2, T3, ...>","첫 번째 → 두 번째 → 세 번째 순 사전식 비교","set<tuple<...>> 조합이 B형에서 유용"],"code":"#include <tuple>\n#include <set>\n\nset<tuple<int,int,int>> s;\n\n// remain → time → id 순 오름차순\ns.insert({remain, time, id});\n\nauto [r, t, mID] = *s.begin();\n\n// 특정 원소 삭제\ns.erase({r, t, mID});","explain":["문제의 우선순위 문장을 그대로 tuple 순서로 옮기면 구현이 단순해집니다.","내림차순 조건이 섞이면 값을 음수로 넣거나 comparator를 따로 만드는 방법을 검토합니다."],"methods":[["get<0>(t)","0번째 값","O(1)",""],["auto [a,b,c]=t","구조적 바인딩","O(1)","C++17"],["make_tuple(...)","tuple 생성","O(1)",""],["비교 연산","0→1→2... 사전식 비교","원소 수에 비례","복합 우선순위 표현에 좋음"]]},"priority_queue":{"title":"priority_queue — 현재 최댓값/최솟값 반복 추출","problem":"현재 가장 높은 점수, 가장 가까운 정점, 가장 급한 작업처럼 Top 1 또는 Top-K를 반복해서 뽑을 때.","key":["기본: priority_queue<T> = Max Heap","Min Heap: priority_queue<T, vector<T>, greater<T>>","top O(1), push/pop O(log N)","중간 삭제는 어려움 → lazy deletion 고려"],"code":"#include <queue>\n#include <vector>\n#include <functional>\n\n// Max Heap\npriority_queue<int> maxPQ;\n\n// Min Heap\npriority_queue<\n    pair<int,int>,\n    vector<pair<int,int>>,\n    greater<pair<int,int>>\n> minPQ;\n\nminPQ.push({10, 3}); // {비용, 정점}\n\nauto [cost, node] = minPQ.top();\nminPQ.pop();","explain":["priority_queue의 템플릿 인자는 T, 내부 Container, Compare 순서입니다.","기본은 큰 값부터 나오는 Max Heap입니다.","중간 원소 삭제가 반복되면 set을 쓰거나 version/removed를 이용한 lazy deletion을 적용합니다."],"methods":[["pq.top()","최상위 원소 조회","O(1)","기본 Max Heap"],["pq.push(x)","삽입","O(log N)",""],["pq.emplace(...)","제자리 삽입","O(log N)",""],["pq.pop()","최상위 삭제","O(log N)","값을 반환하지 않음. top 먼저 읽기"],["pq.size()/empty()","크기/비었는지","O(1)",""],["pq.swap(other)","교환","대체로 O(1)",""],["중간 erase","직접 지원 안 함","-","set 또는 lazy deletion/version 사용"],["find/iteration","직접 지원 안 함","-","내부 컨테이너 직접 접근 불가"]]},"vector":{"title":"vector — 가장 기본적인 동적 배열","problem":"연속 메모리 기반이라 순회와 인덱스 접근이 빠름. 그래프 인접 리스트에도 가장 많이 사용.","key":["형식: vector<T>","v[i] O(1)","push_back 평균 O(1)","중간 삽입/삭제 O(N)"],"code":"#include <vector>\n\nvector<int> v;\nv.push_back(10);\nv.push_back(20);\n\nint x = v[0]; // O(1)\n\n// 일반 그래프\nvector<int> graph[MAX_N];\n\n// 가중 그래프: {다음 정점, 가중치}\nvector<pair<int,int>> weighted[MAX_N];\n\nweighted[1].push_back({3, 10});","explain":["B형에서 vector 중간 erase를 query마다 반복하는 코드는 시간복잡도를 꼭 의심해야 합니다.","인접 리스트 graph[node] 형태는 그래프 구현의 기본 패턴입니다."],"methods":[["v[i]","i번째 원소 접근","O(1)","범위 검사 없음"],["v.at(i)","범위 검사 포함 접근","O(1)","범위 밖이면 예외"],["v.front()/back()","첫/마지막 원소","O(1)",""],["v.push_back(x)","뒤에 삽입","상각 O(1)","재할당 발생 시 O(N)"],["v.emplace_back(...)","뒤에서 제자리 생성","상각 O(1)",""],["v.pop_back()","마지막 원소 삭제","O(1)",""],["v.insert(it,x)","중간 삽입","O(N)","B형 반복 호출 주의"],["v.erase(it)","한 원소 삭제","O(N)","뒤 원소들을 당김"],["v.erase(first,last)","범위 삭제","O(N)",""],["v.clear()","전체 삭제(size=0)","O(N)","capacity는 보통 유지"],["v.resize(n)","size 변경","증감 원소 수에 비례","늘리면 기본값으로 생성"],["v.reserve(n)","capacity 미리 확보","재할당 시 O(N)","push_back 대량 반복이면 유용"],["v.capacity()","현재 확보 공간","O(1)",""],["v.shrink_to_fit()","capacity 축소 요청","구현 의존/O(N) 가능","시험에선 거의 불필요"],["v.assign(n,val)","내용 전체 재할당","O(N)",""],["v.swap(other)","두 vector 교환","대체로 O(1)","vector<int>().swap(v)로 메모리까지 비우는 패턴"],["remove + erase","특정 값 전체 삭제","O(N)","erase(remove(v.begin(),v.end(),x),v.end())"],["sort(v.begin(),v.end())","정렬","O(N log N)","<algorithm> 함수"],["lower_bound(...)","정렬 vector 이분 탐색","O(log N)","반드시 정렬된 상태"]]},"deque":{"title":"deque — 앞/뒤 삽입·삭제 O(1)","problem":"양쪽 끝을 자주 사용하는 큐. 대표적으로 0-1 BFS에서 사용.","key":["형식: deque<T>","push_front/back, pop_front/back O(1)","인덱스 접근 O(1)","중간 삭제는 O(N)"],"code":"#include <deque>\n\ndeque<int> dq;\n\ndq.push_front(10);\ndq.push_back(20);\n\nint a = dq.front();\nint b = dq.back();\n\n// 0-1 BFS\nif (weight == 0)\n    dq.push_front(next);\nelse\n    dq.push_back(next);","explain":["queue와 달리 앞쪽에도 넣을 수 있다는 점이 핵심입니다.","중간 삭제가 싸지는 것은 아니므로 vector의 대체재로 무조건 쓰면 안 됩니다."],"methods":[["dq[i]","i번째 원소 접근","O(1)","vector처럼 random access 가능"],["dq.at(i)","범위 검사 접근","O(1)",""],["dq.front()/back()","첫/마지막 원소","O(1)",""],["dq.push_front(x)","앞에 삽입","O(1)","deque의 대표 장점"],["dq.push_back(x)","뒤에 삽입","O(1)",""],["dq.emplace_front/back(...)","양끝 제자리 생성","O(1)",""],["dq.pop_front()","앞 삭제","O(1)",""],["dq.pop_back()","뒤 삭제","O(1)",""],["dq.insert(it,x)","중간 삽입","O(N)","양끝이 아니라면 비쌈"],["dq.erase(it)","중간 한 원소 삭제","O(N)","앞/뒤 가까운 쪽으로 원소 이동"],["dq.erase(first,last)","중간 범위 삭제","O(N)",""],["dq.clear()","전체 삭제","O(N)",""],["dq.resize(n)","size 변경","증감 원소 수에 비례",""],["dq.assign(n,val)","내용 재할당","O(N)",""],["dq.swap(other)","두 deque 교환","대체로 O(1)",""],["remove + erase","특정 값 전체 삭제","O(N)","dq.erase(remove(dq.begin(),dq.end(),x),dq.end()) 가능"],["find(dq.begin(),...)","값 순차 탐색","O(N)","ID 반복 조회에는 부적합"],["sort(dq.begin(),dq.end())","정렬","O(N log N)","deque iterator는 random access라 sort 가능"]]},"queue":{"title":"queue — BFS의 기본 FIFO","problem":"먼저 들어온 상태부터 처리하는 BFS, 작업 대기열.","key":["형식: queue<T>","push / pop / front O(1)","FIFO: First In First Out"],"code":"#include <queue>\n\nqueue<int> q;\nq.push(start);\nvisited[start] = true;\n\nwhile (!q.empty()) {\n    int cur = q.front();\n    q.pop();\n\n    for (int nxt : graph[cur]) {\n        if (visited[nxt]) continue;\n        visited[nxt] = true;\n        q.push(nxt);\n    }\n}","explain":["모든 간선 비용이 같을 때 BFS로 최단 이동 횟수를 구할 수 있습니다.","visited를 push할 때 처리하면 같은 정점이 중복으로 queue에 들어가는 것을 막기 쉽습니다."],"methods":[["q.front()","가장 먼저 들어온 값","O(1)",""],["q.back()","가장 나중 값","O(1)",""],["q.push(x)","뒤 삽입","O(1)",""],["q.emplace(...)","뒤 제자리 생성","O(1)",""],["q.pop()","앞 삭제","O(1)","값 반환 안 함"],["q.size()/empty()","크기/비었는지","O(1)",""],["q.swap(other)","교환","대체로 O(1)","queue<int>().swap(q)로 비우는 패턴 가능"],["erase/find","지원 안 함","-","중간 접근이 필요하면 deque/vector 등 검토"]]},"stack":{"title":"stack — 가장 최근 상태부터 처리","problem":"괄호, 후위표기식, DFS 반복 구현, 되돌리기, 모노톤 스택.","key":["형식: stack<T>","push / pop / top O(1)","LIFO: Last In First Out"],"code":"#include <stack>\n\nstack<int> st;\n\nst.push(10);\nst.push(20);\n\nint cur = st.top(); // 20\nst.pop();\n\n// 반복 DFS\nst.push(start);\nwhile (!st.empty()) {\n    int cur = st.top();\n    st.pop();\n    // ...\n}","explain":["재귀 DFS를 직접 스택으로 바꾸고 싶을 때 사용할 수 있습니다.","문자열 파싱, 괄호, 후위식 문제에서도 자주 등장합니다."],"methods":[["st.top()","최상위 값","O(1)",""],["st.push(x)","위에 삽입","O(1)",""],["st.emplace(...)","제자리 삽입","O(1)",""],["st.pop()","최상위 삭제","O(1)","값 반환 안 함"],["st.size()/empty()","크기/비었는지","O(1)",""],["st.swap(other)","교환","대체로 O(1)",""],["erase/find","지원 안 함","-","중간 원소를 다룰 구조가 아님"]]},"list":{"title":"list — iterator를 알고 있을 때 중간 삭제 O(1)","problem":"특정 ID가 연결 리스트 중간에서 자주 삭제되고, 그 위치(iterator)를 별도로 저장할 수 있을 때.","key":["형식: list<T>","iterator로 erase 시 O(1)","random access 불가","ID → iterator 조합이 핵심"],"code":"#include <list>\n#include <unordered_map>\n\nlist<int> li;\nunordered_map<int, list<int>::iterator> pos;\n\nvoid add(int id) {\n    li.push_back(id);\n    pos[id] = prev(li.end());\n}\n\nvoid remove(int id) {\n    auto it = pos.find(id);\n    if (it == pos.end()) return;\n\n    li.erase(it->second); // O(1)\n    pos.erase(it);\n}","explain":["list 자체에서 id를 찾으면 O(N)이므로 장점이 사라집니다.","반드시 ID→iterator 같은 보조 인덱스와 조합될 때 강력합니다."],"methods":[["li.front()/back()","첫/마지막 값","O(1)",""],["li.push_front/back(x)","양끝 삽입","O(1)",""],["li.pop_front/back()","양끝 삭제","O(1)",""],["li.insert(it,x)","iterator 앞에 삽입","O(1)","위치를 알고 있을 때 강력"],["li.erase(it)","iterator 삭제","O(1)","ID→iterator 조합 핵심"],["li.erase(first,last)","범위 삭제","O(K)","K 삭제 개수"],["li.remove(x)","값 x 전부 삭제","O(N)","vector의 remove 알고리즘과 다르게 멤버 함수"],["li.remove_if(pred)","조건 만족 원소 삭제","O(N)",""],["li.unique()","연속 중복 제거","O(N)","정렬 후 쓰면 전체 중복 제거처럼 활용 가능"],["li.sort()","list 자체 정렬","O(N log N)","std::sort는 list에 사용 불가"],["li.reverse()","순서 뒤집기","O(N)",""],["li.merge(other)","정렬된 두 list 병합","O(N+M)","두 리스트가 정렬되어 있어야 함"],["li.splice(...)","노드를 다른 list로 이동","대체로 O(1)","복사 없이 연결만 변경"],["li.clear()","전체 삭제","O(N)",""],["li.size()/empty()","크기/비었는지","O(1)",""]]},"unordered_set":{"title":"unordered_set — 존재 여부 평균 O(1)","problem":"정렬은 필요 없고 '이 값이 존재하는가?'를 빠르게 확인할 때.","key":["형식: unordered_set<Key>","insert/find/erase 평균 O(1)","Value 없이 Key만 저장"],"code":"#include <unordered_set>\n\nunordered_set<int> active;\n\nactive.insert(1001);\n\nif (active.find(1001) != active.end()) {\n    // 존재\n}\n\nactive.erase(1001);","explain":["unordered_map<Key, bool>보다 존재 여부만 필요하다면 의도가 더 명확합니다.","정렬 순회가 필요하면 set을 사용합니다."],"methods":[["s.insert(x)","원소 삽입","평균 O(1)",""],["s.emplace(x)","제자리 삽입","평균 O(1)",""],["s.find(x)","원소 탐색","평균 O(1)",""],["s.count(x)","존재 여부(0/1)","평균 O(1)",""],["s.erase(x)","값 삭제","평균 O(1)",""],["s.erase(it)","iterator 삭제","평균 O(1)",""],["s.clear()","전체 삭제","O(N)",""],["s.size()/empty()","크기/비었는지","O(1)",""],["s.reserve(n)","bucket 미리 확보","평균 O(N) 재배치 가능","대량 삽입 전 유용"],["s.rehash(n)","bucket 수 변경","평균 O(N)",""],["s.load_factor()","현재 load factor","O(1)",""]]},"multiset":{"title":"multiset — 중복 허용 정렬 컨테이너","problem":"같은 점수가 여러 개 존재하면서 최소/최대 값을 계속 유지해야 할 때.","key":["형식: multiset<T>","중복 허용","insert/find/erase O(log N)","erase(value)는 해당 값 여러 개를 모두 지울 수 있음"],"code":"#include <set>\n\nmultiset<int> ms;\n\nms.insert(10);\nms.insert(10);\nms.insert(20);\n\n// 10 하나만 삭제\nauto it = ms.find(10);\nif (it != ms.end())\n    ms.erase(it);\n\n// ms.erase(10); // 10을 전부 지울 수 있으므로 주의","explain":["중복 데이터를 유지해야 하는데 정렬도 필요한 경우 set 대신 multiset을 씁니다.","한 개만 삭제할 때는 iterator를 erase에 넘기는 습관을 들이면 좋습니다."],"methods":[["ms.insert(x)","중복 허용 삽입","O(log N)",""],["ms.find(x)","x 중 하나의 iterator","O(log N)",""],["ms.count(x)","x 개수","O(log N + count)",""],["ms.erase(x)","값 x를 모두 삭제","O(log N + count)","한 개만 지우려면 절대 이 방식 쓰지 않기"],["ms.erase(it)","iterator 하나 삭제","상각 O(1)","중복 중 1개만 삭제할 때"],["ms.lower_bound(x)","x 이상 첫 위치","O(log N)",""],["ms.upper_bound(x)","x 초과 첫 위치","O(log N)",""],["ms.equal_range(x)","x 전체 범위","O(log N)",""],["*ms.begin()/rbegin()","최소/최대","O(1)",""],["ms.clear()","전체 삭제","O(N)",""],["ms.size()/empty()","크기/비었는지","O(1)",""]]},"sort":{"title":"sort — O(N log N) 정렬","problem":"데이터를 한 번 또는 적은 횟수 정렬하고 이후 순차/이분 탐색할 때.","key":["헤더: <algorithm>","sort(begin, end) O(N log N)","greater<T>()로 내림차순","pair/tuple은 기본 사전식 정렬"],"code":"#include <algorithm>\n#include <vector>\n\nvector<int> v = {4, 1, 3, 2};\n\nsort(v.begin(), v.end()); // 1 2 3 4\n\nsort(v.begin(), v.end(), greater<int>()); // 4 3 2 1\n\nvector<pair<int,int>> p;\nsort(p.begin(), p.end()); // first -> second","explain":["query마다 전체 sort를 다시 하는 구조는 B형에서 위험할 수 있습니다.","데이터가 계속 추가/삭제되며 정렬 상태를 유지해야 한다면 set/map/PQ를 검토합니다."],"methods":[["sort(first,last)","오름차순 정렬","O(N log N)","random access iterator 필요"],["sort(...,greater<T>())","내림차순","O(N log N)",""],["stable_sort(...)","동일 key의 기존 순서 유지","O(N log N)","추가 메모리 사용 가능"],["partial_sort(...)","앞 K개만 정렬","O(N log K)","Top-K 일부 정렬"],["nth_element(...)","n번째 위치 기준 분할","평균 O(N)","중앙값/Top-K 경계에 유용"]]},"bounds":{"title":"lower_bound / upper_bound — 정렬 데이터 이분 탐색","problem":"정렬된 배열/vector에서 특정 값의 시작 위치, 초과 위치, 중복 개수를 O(log N)에 찾을 때.","key":["lower_bound(x) = x 이상 첫 위치","upper_bound(x) = x 초과 첫 위치","정렬된 범위에서 O(log N)","set/map에서는 멤버 lower_bound 사용"],"code":"#include <algorithm>\n\nvector<int> v = {1, 3, 3, 3, 5, 7};\n\nauto lo = lower_bound(v.begin(), v.end(), 3);\nauto hi = upper_bound(v.begin(), v.end(), 3);\n\nint firstIdx = lo - v.begin();\nint count3 = hi - lo;\n\n// set이면\nset<int> s;\nauto it = s.lower_bound(3);","explain":["lower_bound는 '찾는다'보다 '삽입 가능한 경계 위치를 찾는다'고 이해하면 응용하기 쉽습니다.","정렬되지 않은 vector에 사용하면 의미 있는 결과를 보장하지 않습니다."],"methods":[["lower_bound(first,last,x)","x 이상 첫 위치","O(log N)*","vector/array 등 random access에서 O(log N)"],["upper_bound(...,x)","x 초과 첫 위치","O(log N)*",""],["binary_search(...,x)","존재 여부","O(log N)*",""],["equal_range(...,x)","lower/upper 동시 반환","O(log N)*",""],["set.lower_bound(x)","set에서 경계 검색","O(log N)","std::lower_bound(set.begin...)는 순회 비용 때문에 비추천"]]},"remove_erase":{"title":"remove + erase — vector에서 특정 값 전체 삭제","problem":"vector에서 target과 같은 값을 전부 제거할 때 쓰는 erase-remove idiom.","key":["remove는 실제 size를 줄이지 않음","remove가 반환한 새 논리적 end부터 erase","전체 O(N)","반복 호출이 많으면 다른 자료구조 검토"],"code":"#include <algorithm>\n#include <vector>\n\nvector<int> v = {1, 3, 2, 3, 4};\nint target = 3;\n\nv.erase(\n    remove(v.begin(), v.end(), target),\n    v.end()\n);\n\n// 결과: 1 2 4","explain":["remove는 살아남을 원소들을 앞으로 당기고 '새 논리적 끝' iterator를 반환합니다.","그래서 실제 컨테이너 크기를 줄이는 erase를 뒤에 이어 붙입니다.","B형에서 이 작업을 수만 번 반복하면 O(N) 누적 비용이 커질 수 있습니다."],"methods":[["remove(first,last,x)","x가 아닌 원소를 앞으로 이동","O(N)","컨테이너 size는 안 줄어듦"],["remove_if(...,pred)","조건 만족 원소를 논리적으로 제거","O(N)",""],["v.erase(newEnd,v.end())","실제 size 축소","O(N)",""],["deque도 동일 패턴","dq.erase(remove(...),dq.end())","O(N)","deque에서도 사용 가능"],["list는 li.remove(x)","list 전용 멤버 함수","O(N)","list는 erase-remove보다 멤버 remove가 자연스러움"]]},"find_algo":{"title":"std::find — 순차 탐색 O(N)","problem":"vector 등에서 간단히 특정 값을 찾을 때. 반복 query에는 주의.","key":["형식: find(begin, end, target)","선형 탐색 O(N)","반복 ID 조회라면 unordered_map/배열 고려"],"code":"#include <algorithm>\n\nauto it = find(v.begin(), v.end(), target);\n\nif (it != v.end()) {\n    int idx = it - v.begin();\n}\n\n// query가 매우 많다면:\n// unordered_map<int, Data> byId;\n// 또는 Data data[MAX_ID];","explain":["코드가 간단해서 쓰기 쉽지만 시간복잡도는 O(N)입니다.","B형에서는 호출 횟수가 많으므로 find(vector...)가 반복되는지 꼭 확인해야 합니다."],"methods":[["find(first,last,x)","x 순차 탐색","O(N)","반복 query면 hash/배열 검토"],["find_if(...,pred)","조건 만족 첫 원소","O(N)",""],["count(...,x)","x 개수","O(N)",""],["count_if(...,pred)","조건 만족 개수","O(N)",""]]},"fill_memset":{"title":"fill / memset — 빠르고 명확한 초기화","problem":"visited, dist, 배열 상태를 init()이나 탐색 전 초기화할 때.","key":["fill은 원소 단위 값 대입","memset은 byte 단위 채우기","memset(..., 0) / -1 / 0x3f 패턴이 자주 사용","둘 다 초기화할 원소 수에 비례"],"code":"#include <algorithm>\n#include <cstring>\n\n// 원소 단위\nfill(dist, dist + N, INF);\n\n// 0 초기화\nmemset(visited, 0, sizeof(visited));\n\n// -1 초기화\nmemset(dist, -1, sizeof(dist));\n\n// INF 비슷한 값\nmemset(dist, 0x3f, sizeof(dist));\n// int 기준 0x3f3f3f3f ≈ 1.06e9","explain":["memset(dist, 10, ...)은 각 int를 10으로 만드는 것이 아니라 각 byte에 0x0A를 채웁니다.","임의의 int 값 초기화는 fill이 안전하고 읽기 쉽습니다.","B형 init()에서 대형 배열을 여러 번 초기화한다면 그 비용도 호출 횟수와 함께 봐야 합니다."],"methods":[["fill(first,last,val)","원소 단위 val 초기화","O(N)","임의 int 값에 안전"],["fill_n(first,n,val)","n개 원소 초기화","O(N)",""],["memset(ptr,0,size)","byte를 0으로","O(bytes)","0 초기화에 자주 사용"],["memset(ptr,-1,size)","각 byte를 0xFF","O(bytes)","int -1 초기화에 자주 사용"],["memset(ptr,0x3f,size)","INF 패턴","O(bytes)","int ≈ 1.06e9"],["memcpy(dst,src,size)","메모리 복사","O(bytes)","POD 배열 상태 복사에 유용"]]},"array":{"title":"std::array — 고정 크기 STL 배열","problem":"크기는 컴파일 타임에 고정하면서 begin/end 등 STL 인터페이스를 쓰고 싶을 때.","key":["형식: array<T, N>","크기 고정","인덱스 접근 O(1)","sort/fill 등 STL과 바로 사용"],"code":"#include <array>\n#include <algorithm>\n\narray<int, 4> dr = {-1, 1, 0, 0};\narray<int, 4> dc = {0, 0, -1, 1};\n\narray<int, 5> a = {5, 1, 4, 2, 3};\nsort(a.begin(), a.end());","explain":["방향 배열처럼 크기가 고정된 작은 데이터에 깔끔합니다.","B형에서는 일반 C 배열도 충분히 많이 사용되므로 반드시 array를 쓸 필요는 없습니다."],"methods":[["a[i]/a.at(i)","원소 접근","O(1)",""],["a.front()/back()","첫/마지막","O(1)",""],["a.fill(val)","모든 원소 val","O(N)",""],["a.size()/empty()","크기","O(1)","size는 컴파일 타임 고정"],["a.begin()/end()","STL 알고리즘 연동","O(1)","sort, reverse 등 가능"],["a.swap(other)","교환","O(N)","고정 배열 원소 자체를 교환"]]},"string":{"title":"string — 문자열 처리 기본","problem":"문자열 key, 파싱, 접두사/패턴 문제에서 자주 사용.","key":["형식: string s","인덱스 접근 O(1)","중간 insert/erase는 O(N)","find는 일반적으로 선형 이상이 될 수 있음"],"code":"#include <string>\n\nstring s = \"abc123\";\n\ns.push_back('x');\ns.pop_back();\n\nstring sub = s.substr(1, 3);\n\nsize_t pos = s.find(\"123\");\nif (pos != string::npos) {\n    // 찾음\n}\n\ns.erase(1, 2);          // index 1부터 2글자 삭제\ns.insert(1, \"HELLO\");   // index 1 앞에 삽입\n\nint x = stoi(\"123\");\nlong long y = stoll(\"9876543210\");\nstring t = to_string(12345);","explain":["B형 문자열 문제에서 string 자체를 unordered_map key로 바로 쓸 수 있습니다.","문자열 길이가 짧고 호출이 많다면 정수 encoding/hash로 바꾸는 방식도 고려합니다."],"methods":[["s.size()/length()","문자열 길이","O(1)",""],["s.empty()","빈 문자열 여부","O(1)",""],["s[i]/s.at(i)","문자 접근","O(1)","at은 범위 검사"],["s.front()/back()","첫/마지막 문자","O(1)",""],["s.push_back(c)","뒤 문자 추가","상각 O(1)",""],["s.pop_back()","마지막 문자 삭제","O(1)",""],["s += t / append(t)","뒤에 문자열 추가","추가 길이에 비례",""],["s.insert(pos,t)","중간 삽입","O(N)",""],["s.erase(pos,len)","구간 삭제","O(N)",""],["s.replace(pos,len,t)","구간 치환","O(N)",""],["s.substr(pos,len)","부분 문자열 생성","O(len)","복사 비용 있음"],["s.find(t)","부분 문자열 검색","대략 O(N*M) 최악 가능","대량 패턴 검색이면 KMP/Hash 검토"],["s.rfind(t)","뒤에서 검색","검색 길이에 비례",""],["s.compare(t)","사전식 비교","O(min(N,M))",""],["stoi/stoll","문자열→정수","O(len)",""],["to_string(x)","정수→문자열","O(자리수)",""],["sort(s.begin(),s.end())","문자 정렬","O(N log N)",""]]},"bitset":{"title":"bitset — 고정 길이 비트 상태","problem":"상태 집합, 방문 여부, 작은 universe의 집합 연산을 비트 단위로 빠르게 처리.","key":["형식: bitset<N>","set/reset/flip/test","&, |, ^로 집합 연산","N은 컴파일 타임 상수"],"code":"#include <bitset>\n\nbitset<128> a, b;\n\na.set(3);        // 3번 비트 = 1\na.reset(3);      // 3번 비트 = 0\na.flip(5);       // 반전\n\nbool on = a.test(10);\nint cnt = (int)a.count();\n\nbitset<128> inter = a & b;\nbitset<128> uni   = a | b;","explain":["정점 수/종류 수가 작고 집합 교집합을 반복하면 bool 배열보다 훨씬 빠른 경우가 있습니다.","동적 크기가 필요하면 vector<unsigned long long> 등 직접 비트셋을 만들기도 합니다."],"methods":[["b.set()","전체 비트를 1","O(N/word)",""],["b.set(i)","i 비트를 1","O(1)",""],["b.reset()/reset(i)","전체/특정 비트 0","전체 O(N/word), 단일 O(1)",""],["b.flip()/flip(i)","비트 반전","전체 O(N/word), 단일 O(1)",""],["b.test(i)","i 비트 확인","O(1)",""],["b[i]","i 비트 접근","O(1)",""],["b.count()","1의 개수","O(N/word)",""],["b.any()/none()/all()","비트 존재 판정","O(N/word)",""],["a & b / | / ^","교집합/합집합/대칭차","O(N/word)","집합 연산에 강력"],["b << k / >> k","비트 이동","O(N/word)",""]]},"numeric":{"title":"<numeric> — accumulate / iota / gcd / lcm","problem":"합계, 연속 초기값, 최대공약수 등 자잘하지만 자주 나오는 유틸리티.","key":["accumulate O(N)","iota O(N)","gcd O(log min(a,b))","lcm은 오버플로 주의"],"code":"#include <numeric>\n\nlong long sum = accumulate(v.begin(), v.end(), 0LL);\n\nvector<int> p(N);\niota(p.begin(), p.end(), 0); // 0,1,2,... N-1\n\nint g = gcd(a, b);\nlong long l = lcm((long long)a, (long long)b);","explain":["accumulate 초기값을 0이 아니라 0LL로 주어야 long long 합산이 안전합니다.","Union-Find parent 초기화에 iota를 쓰는 것도 깔끔합니다."],"methods":[["accumulate(first,last,init)","누적 합/연산","O(N)","long long이면 init=0LL"],["iota(first,last,start)","start부터 연속값 채우기","O(N)","parent 초기화에 유용"],["gcd(a,b)","최대공약수","O(log min)",""],["lcm(a,b)","최소공배수","O(log min)","곱셈 overflow 주의"],["inner_product(...)","내적/쌍 누적","O(N)","가끔 유용"],["partial_sum(...)","누적합 배열 생성","O(N)",""]]},"algorithm_misc":{"title":"<algorithm> 자주 쓰는 기타 함수","problem":"최대/최소, 뒤집기, 회전, 순열 등 구현 시간을 줄여주는 함수들.","key":["min/max/min_element/max_element","reverse/rotate","next_permutation","unique"],"code":"#include <algorithm>\n\nint mn = *min_element(v.begin(), v.end());\nint mx = *max_element(v.begin(), v.end());\n\nreverse(v.begin(), v.end());\n\nrotate(v.begin(), v.begin() + k, v.end());\n\n// 다음 사전순 순열\ndo {\n    // 현재 순열 사용\n} while (next_permutation(v.begin(), v.end()));\n\n// 정렬 후 중복 제거\nsort(v.begin(), v.end());\nv.erase(unique(v.begin(), v.end()), v.end());","explain":["next_permutation은 순열 완전탐색에서 직접 DFS 대신 쓸 수 있습니다.","unique는 연속 중복만 제거하므로 전체 중복 제거는 먼저 sort가 필요합니다."],"methods":[["min(a,b)/max(a,b)","두 값 최소/최대","O(1)",""],["min_element/max_element","범위 최소/최대 위치","O(N)",""],["reverse(first,last)","순서 뒤집기","O(N)",""],["rotate(first,middle,last)","구간 회전","O(N)",""],["swap(a,b)","두 값 교환","타입에 따라",""],["next_permutation","다음 사전순 순열","O(N)","순열 완전탐색"],["prev_permutation","이전 사전순 순열","O(N)",""],["unique(first,last)","연속 중복 압축","O(N)","실제 size는 erase 필요"],["partition(...)","조건 기준 분할","O(N)",""],["nth_element(...)","n번째 원소 기준 분할","평균 O(N)",""]]}};
+const PY_CASES = {"grid":{"title":"격자 최단거리 / BFS vs 다익스트라","problem":"Python에서도 핵심은 동일합니다. 이동 비용이 모두 1이면 deque BFS, 비용이 다르면 heapq 다익스트라.","key":["BFS 큐는 collections.deque","다익스트라 우선순위 큐는 heapq","visited와 dist를 구분"],"code":"from collections import deque\nimport heapq\n\n# 비용이 모두 1이면 BFS\ndef bfs(sr, sc, er, ec):\n    dist = [[-1] * N for _ in range(N)]\n    q = deque([(sr, sc)])\n    dist[sr][sc] = 0\n\n    while q:\n        r, c = q.popleft()\n\n        if (r, c) == (er, ec):\n            return dist[r][c]\n\n        for d in range(4):\n            nr = r + dr[d]\n            nc = c + dc[d]\n\n            if not (0 <= nr < N and 0 <= nc < N):\n                continue\n            if board[nr][nc] == WALL:\n                continue\n            if dist[nr][nc] != -1:\n                continue\n\n            dist[nr][nc] = dist[r][c] + 1\n            q.append((nr, nc))\n\n    return -1\n\n\n# 비용이 다르면 다익스트라\ndef dijkstra(sr, sc, er, ec):\n    INF = 10**18\n    dist = [[INF] * N for _ in range(N)]\n    pq = [(0, sr, sc)]\n    dist[sr][sc] = 0\n\n    while pq:\n        cost, r, c = heapq.heappop(pq)\n\n        if cost != dist[r][c]:\n            continue  # lazy deletion\n\n        for d in range(4):\n            nr = r + dr[d]\n            nc = c + dc[d]\n\n            if not (0 <= nr < N and 0 <= nc < N):\n                continue\n            if board[nr][nc] == WALL:\n                continue\n\n            next_cost = cost + weight[nr][nc]\n\n            if next_cost < dist[nr][nc]:\n                dist[nr][nc] = next_cost\n                heapq.heappush(pq, (next_cost, nr, nc))\n\n    return dist[er][ec]","explain":["Python BFS는 list.pop(0) 대신 deque.popleft()를 사용해야 O(1)입니다.","heapq는 최소 힙이라 다익스트라와 잘 맞습니다.","heapq에서도 기존 항목을 중간 삭제하지 않고 dist 비교로 오래된 항목을 걸러냅니다."]},"dijkstra":{"title":"가중 그래프 최단거리 / heapq 다익스트라","problem":"인접 리스트 + heapq + dist 배열/리스트가 기본 패턴입니다.","key":["graph[u] = [(v,w), ...]","heapq는 최소 힙","cost != dist[cur]로 lazy deletion"],"code":"import heapq\n\nINF = 10**18\ngraph = [[] for _ in range(N + 1)]\n\ndef dijkstra(start):\n    dist = [INF] * (N + 1)\n    dist[start] = 0\n\n    pq = [(0, start)]\n\n    while pq:\n        cost, cur = heapq.heappop(pq)\n\n        if cost != dist[cur]:\n            continue\n\n        for nxt, w in graph[cur]:\n            next_cost = cost + w\n\n            if next_cost < dist[nxt]:\n                dist[nxt] = next_cost\n                heapq.heappush(pq, (next_cost, nxt))\n\n    return dist","explain":["Python tuple은 사전식 비교되므로 (cost, node)를 그대로 heapq에 넣을 수 있습니다.","정점 수가 크면 함수 내부에서 큰 dist를 매 query마다 새로 만드는 비용도 함께 봐야 합니다."]},"zeroone":{"title":"0-1 BFS / deque","problem":"가중치가 0/1이면 heapq 대신 deque를 사용합니다.","key":["0 비용은 appendleft","1 비용은 append","dist 갱신 조건은 다익스트라와 동일"],"code":"from collections import deque\n\nINF = 10**18\ndist = [INF] * (N + 1)\ndist[start] = 0\n\ndq = deque([start])\n\nwhile dq:\n    cur = dq.popleft()\n\n    for nxt, w in graph[cur]:\n        next_cost = dist[cur] + w\n\n        if next_cost < dist[nxt]:\n            dist[nxt] = next_cost\n\n            if w == 0:\n                dq.appendleft(nxt)\n            else:\n                dq.append(nxt)","explain":["deque의 appendleft/popleft는 O(1)입니다.","list.insert(0, x)나 pop(0)은 O(N)이므로 피합니다."]},"component":{"title":"연결 요소 / DFS·BFS","problem":"재귀 제한 때문에 Python에서는 큰 그래프 DFS를 반복형 stack/deque로 작성하는 경우가 안전합니다.","key":["visited 리스트","재귀 DFS면 recursionlimit 고려","큰 입력은 반복 DFS/BFS 권장"],"code":"from collections import deque\n\nvisited = [False] * (N + 1)\n\ndef bfs(start):\n    q = deque([start])\n    visited[start] = True\n    size = 0\n\n    while q:\n        cur = q.popleft()\n        size += 1\n\n        for nxt in graph[cur]:\n            if visited[nxt]:\n                continue\n            visited[nxt] = True\n            q.append(nxt)\n\n    return size\n\n\ncomponent_count = 0\ncomponent_sizes = []\n\nfor node in range(1, N + 1):\n    if visited[node]:\n        continue\n\n    component_count += 1\n    component_sizes.append(bfs(node))","explain":["Python 재귀 DFS는 깊이가 크면 RecursionError가 날 수 있어 반복형 탐색이 실전에서 안전합니다.","B형처럼 호출이 많다면 매번 visited를 새로 만들지 않고 timestamp 방식도 고려할 수 있습니다."]},"uf":{"title":"Union-Find / Disjoint Set","problem":"리스트 parent/size로 구현합니다.","key":["parent = list(range(n+1))","경로 압축","union by size"],"code":"parent = list(range(N + 1))\nsize = [1] * (N + 1)\n\ndef find(x):\n    while parent[x] != x:\n        parent[x] = parent[parent[x]]  # path halving\n        x = parent[x]\n    return x\n\ndef union(a, b):\n    a = find(a)\n    b = find(b)\n\n    if a == b:\n        return False\n\n    if size[a] < size[b]:\n        a, b = b, a\n\n    parent[b] = a\n    size[a] += size[b]\n    return True","explain":["재귀 find도 가능하지만 반복형 find는 recursion 문제를 피할 수 있습니다.","대표자 기준 추가 집계값을 size처럼 같이 관리하면 B형 API 문제에 확장하기 좋습니다."]},"pq":{"title":"heapq + Lazy Deletion","problem":"Python heapq도 중간 삭제가 없으므로 version/removed를 이용한 lazy deletion이 중요합니다.","key":["heapq는 최소 힙","최대 힙은 -score 사용","version/id를 tuple에 같이 넣기"],"code":"import heapq\n\npq = []\nversion = {}\nremoved = set()\n\ndef update(item_id, score):\n    version[item_id] = version.get(item_id, 0) + 1\n    removed.discard(item_id)\n\n    ver = version[item_id]\n\n    # score 큰 순이면 음수 사용\n    heapq.heappush(pq, (-score, item_id, ver))\n\ndef erase_item(item_id):\n    removed.add(item_id)\n\ndef get_best():\n    while pq:\n        neg_score, item_id, ver = pq[0]\n\n        if item_id in removed or version.get(item_id) != ver:\n            heapq.heappop(pq)\n            continue\n\n        return item_id\n\n    return -1","explain":["heapq에는 decrease-key나 임의 삭제 기능이 없습니다.","최대 힙이 필요하면 첫 번째 우선순위 값에 음수를 붙이는 패턴이 가장 흔합니다.","dict + set + heapq 조합이 B형 추천/우선순위 문제에서 자주 쓰입니다."]},"segment":{"title":"Fenwick Tree / Segment Tree","problem":"Python에서도 직접 구현합니다. 합만 필요하면 Fenwick이 코드가 짧고 빠릅니다.","key":["Fenwick update/query O(log N)","1-indexed로 구현하면 편함","큰 연산 수에서 Python은 상수시간도 중요"],"code":"tree = [0] * (N + 1)\n\ndef update(idx, diff):\n    while idx <= N:\n        tree[idx] += diff\n        idx += idx & -idx\n\ndef prefix_sum(idx):\n    result = 0\n\n    while idx > 0:\n        result += tree[idx]\n        idx -= idx & -idx\n\n    return result\n\ndef range_sum(left, right):\n    return prefix_sum(right) - prefix_sum(left - 1)","explain":["Python에서는 함수 호출 오버헤드도 있으므로 매우 빡빡한 경우 로컬 변수화 등 미세 최적화를 할 수 있습니다.","그래도 먼저 자료구조의 큰 시간복잡도를 맞추는 것이 우선입니다."]},"trie":{"title":"Trie / dict 기반 또는 배열 기반","problem":"문자 종류가 적고 성능이 중요하면 child 배열, 구현 편의는 dict 기반 Trie.","key":["dict 기반은 구현 간단","알파벳 소문자 고정이면 [0]*26 배열 방식도 가능","노드에 cnt/best 등 집계값 저장"],"code":"# dict 기반 Trie\nclass Node:\n    __slots__ = (\"child\", \"cnt\", \"finish\")\n\n    def __init__(self):\n        self.child = {}\n        self.cnt = 0\n        self.finish = False\n\nroot = Node()\n\ndef insert(word):\n    cur = root\n\n    for ch in word:\n        if ch not in cur.child:\n            cur.child[ch] = Node()\n\n        cur = cur.child[ch]\n        cur.cnt += 1\n\n    cur.finish = True\n\ndef count_prefix(prefix):\n    cur = root\n\n    for ch in prefix:\n        if ch not in cur.child:\n            return 0\n        cur = cur.child[ch]\n\n    return cur.cnt","explain":["__slots__는 노드가 매우 많을 때 객체 메모리 사용을 줄이는 데 도움이 됩니다.","노드 수가 수십만~수백만이면 class 객체보다 list 기반 배열 Trie가 더 빠르고 메모리 효율적일 수 있습니다."]},"apiindex":{"title":"dict 원본 저장소 + 보조 인덱스","problem":"Python B형에서도 가장 중요한 설계 패턴입니다.","key":["dict: ID → 원본 객체/리스트","heapq/set 대체 구조: 우선순위 인덱스","삭제/변경 시 보조 인덱스 동기화"],"code":"import heapq\n\n# ID -> [score, time, version, active]\ndata = {}\npq = []\n\ndef add_data(item_id, score, time):\n    data[item_id] = [score, time, 1, True]\n    heapq.heappush(pq, (score, time, item_id, 1))\n\ndef update_score(item_id, new_score):\n    score, time, ver, active = data[item_id]\n\n    ver += 1\n    data[item_id] = [new_score, time, ver, active]\n\n    heapq.heappush(pq, (new_score, time, item_id, ver))\n\ndef remove_data(item_id):\n    if item_id in data:\n        data[item_id][3] = False\n\ndef get_best():\n    while pq:\n        score, time, item_id, ver = pq[0]\n\n        cur = data.get(item_id)\n\n        if cur is None or not cur[3] or cur[2] != ver:\n            heapq.heappop(pq)\n            continue\n\n        return item_id\n\n    return -1","explain":["Python 표준 라이브러리에는 C++ set처럼 '정렬 + O(log N) 임의 삭제' 컨테이너가 없습니다.","따라서 heapq + lazy deletion 또는 bisect 기반 정렬 리스트 등을 문제 조건에 맞게 사용합니다.","외부 라이브러리 sortedcontainers는 시험 환경에서 보통 사용할 수 없다고 가정하는 것이 안전합니다."]},"sim":{"title":"시뮬레이션 / 좌표 해시","problem":"tuple을 dict key로 바로 쓸 수 있어 좌표 bucket 구현이 편합니다.","key":["(x,y) tuple을 dict key로 사용","defaultdict(list) 유용","모든 쌍 O(N²) 비교를 피하기"],"code":"from collections import defaultdict\n\nbucket = defaultdict(list)\n\ndef move_all():\n    bucket.clear()\n\n    for i, atom in enumerate(atoms):\n        if not alive[i]:\n            continue\n\n        atom[0] += dx[atom[2]]\n        atom[1] += dy[atom[2]]\n\n        bucket[(atom[0], atom[1])].append(i)\n\n    for indices in bucket.values():\n        if len(indices) >= 2:\n            for idx in indices:\n                alive[idx] = False","explain":["Python은 tuple이 hashable이라 좌표 encoding을 직접 long long으로 만들지 않아도 됩니다.","단, 매우 큰 데이터에서는 tuple/dict 객체 비용이 크므로 정수 encoding이 더 빠를 수도 있습니다."]},"unordered_map":{"title":"dict — C++ unordered_map 대응","problem":"Python에서 가장 자주 쓰는 해시 매핑. Key → Value 조회 평균 O(1).","key":["형식: dict 또는 {}","Key는 hashable이어야 함","in / get / pop 평균 O(1)"],"code":"# ID -> 주문 정보\norders = {}\n\norders[1001] = {\n    \"remain\": 3,\n    \"time\": 10,\n}\n\n# 존재 여부\nif 1001 in orders:\n    cur = orders[1001]\n    cur[\"remain\"] -= 1\n\n# 안전한 조회\norder = orders.get(1001)\n\n# 삭제\norders.pop(1001, None)","explain":["Python dict는 C++ unordered_map에 가장 가까운 구조입니다.","orders[id]로 없는 key를 읽으면 KeyError가 납니다. C++ operator[]처럼 자동 생성되지는 않습니다.","기본값 생성이 필요하면 defaultdict를 고려합니다."],"methods":[["d[key]","key 조회/대입","평균 O(1)","없는 key 조회는 KeyError"],["d.get(key, default)","안전한 조회","평균 O(1)","없으면 default"],["key in d","존재 확인","평균 O(1)","가장 자주 사용"],["d.setdefault(k,v)","없으면 기본값 생성","평균 O(1)","defaultdict 대안"],["d.pop(k, default)","삭제하며 값 반환","평균 O(1)","default 지정 시 KeyError 방지"],["d.items()/keys()/values()","순회 view","O(1) 생성, 순회 O(N)",""],["d.clear()","전체 삭제","O(N)",""],["d.update(other)","일괄 갱신","O(K)",""]]},"map":{"title":"Python에는 C++ map 직접 대응이 없음","problem":"표준 라이브러리 dict는 삽입 순서는 유지하지만 Key 정렬 자료구조가 아닙니다.","key":["Key 정렬이 필요하면 sorted(keys)","동적 lower_bound가 반복되면 bisect + list 고려","외부 sortedcontainers는 시험 환경 비권장"],"code":"# 단순히 key 정렬 순회가 가끔 필요\nmp = {30: 100, 10: 200, 20: 150}\n\nfor key in sorted(mp):\n    value = mp[key]\n    # key: 10, 20, 30\n\n# 정렬 Key 리스트를 따로 유지해야 한다면 bisect 사용\nfrom bisect import bisect_left, insort\n\nkeys = []\n\ndef add_key(k):\n    i = bisect_left(keys, k)\n    if i == len(keys) or keys[i] != k:\n        insort(keys, k)  # 삽입은 O(N)","explain":["Python 표준 라이브러리만으로 C++ map처럼 삽입/삭제/검색 모두 O(log N)인 tree map은 없습니다.","B형에서 동적 정렬 인덱스가 중요하면 heapq lazy deletion이나 문제 맞춤 설계를 많이 사용합니다."],"methods":[["d[key] / d.get(key)","dict의 Key 조회","평균 O(1)","Python dict는 C++ map이 아니라 unordered_map에 가까움"],["sorted(d)","Key 정렬 결과 생성","O(N log N)","Key 정렬이 가끔 필요할 때"],["bisect_left(keys, x)","정렬 list 경계 탐색","O(log N)","삽입은 list 이동 때문에 O(N)"],["insort(keys, x)","정렬 상태 삽입","O(N)","Tree Map의 O(log N) 삽입과 다름"]]},"set":{"title":"set — hash set","problem":"Python set은 C++ unordered_set에 대응합니다. 정렬 set이 아닙니다.","key":["add/remove/discard/in 평균 O(1)","정렬 순서 없음","최솟값 min(s)는 O(N)"],"code":"active = set()\n\nactive.add(1001)\n\nif 1001 in active:\n    pass\n\nactive.discard(1001)  # 없어도 에러 없음\n\n# remove는 없으면 KeyError\n# active.remove(1001)","explain":["Python set은 해시 기반이라 C++ set이 아니라 unordered_set 쪽에 가깝습니다.","정렬된 후보군이 필요하면 heapq/bisect 등 다른 구조가 필요합니다."],"methods":[["s.add(x)","삽입","평균 O(1)",""],["x in s","존재 확인","평균 O(1)",""],["s.discard(x)","없어도 안전 삭제","평균 O(1)","B형 삭제 API에 편함"],["s.remove(x)","삭제","평균 O(1)","없으면 KeyError"],["s.pop()","임의 원소 제거","평균 O(1)","최소/최대가 아님"],["s & t / | / - / ^","집합 연산","원소 수에 비례",""],["s.clear()","전체 삭제","O(N)",""]]},"pair":{"title":"tuple — pair 대응","problem":"Python에서는 별도 pair 타입 대신 tuple을 사용합니다.","key":["(a,b)","사전식 비교","heapq에서 tuple 우선순위로 바로 사용"],"code":"p = (10, 20)\n\na, b = p\n\n# 다익스트라\nimport heapq\npq = []\nheapq.heappush(pq, (dist, node))\n\ncost, cur = heapq.heappop(pq)","explain":["tuple은 불변(immutable)이라 dict/set key로도 사용할 수 있습니다.","사전식 비교라 tie-break를 자연스럽게 표현할 수 있습니다."],"methods":[["(a, b)","2개 값을 tuple로 묶기","O(1)","Python에는 별도 pair 타입 없음"],["a, b = p","구조 분해","O(1)",""],["tuple 비교","앞 원소부터 사전식 비교","원소 수에 비례","heapq tie-break에 자주 사용"]]},"tuple":{"title":"tuple — 복합 우선순위","problem":"Python에서도 우선순위 key를 tuple로 묶는 방식이 매우 강력합니다.","key":["(remain,time,id)","앞 원소부터 사전식 비교","heapq와 조합"],"code":"# 남은 작업 수 -> 주문 시간 -> ID\nkey = (remain, order_time, item_id)\n\nimport heapq\npq = []\nheapq.heappush(pq, key)\n\nremain, order_time, item_id = heapq.heappop(pq)","explain":["C++ set<tuple<...>>처럼 동적 삭제까지 지원하지는 않지만 heapq 우선순위 key에는 매우 적합합니다."],"methods":[["(a, b, c)","복합 우선순위 생성","O(1)",""],["a, b, c = t","구조 분해","O(1)",""],["tuple 비교","앞 원소부터 사전식 비교","원소 수에 비례","remain,time,id 같은 우선순위 표현"]]},"priority_queue":{"title":"heapq — priority_queue 대응","problem":"Python 표준 최소 힙.","key":["heappush/heappop O(log N)","pq[0] O(1)","최대 힙은 음수 key"],"code":"import heapq\n\npq = []\n\nheapq.heappush(pq, (cost, node))\n\ncost, node = heapq.heappop(pq)\n\n# 최대 힙처럼 사용\nmax_pq = []\nheapq.heappush(max_pq, (-score, item_id))\n\nneg_score, item_id = heapq.heappop(max_pq)\nscore = -neg_score","explain":["Python 3.14 이후 max-heap API가 있지만 시험 환경 버전이 다를 수 있어 음수 패턴이 가장 안전합니다.","중간 삭제는 지원하지 않으므로 lazy deletion 사용."],"methods":[["heapq.heappush(pq,x)","삽입","O(log N)",""],["heapq.heappop(pq)","최소 제거/반환","O(log N)",""],["pq[0]","최소 조회","O(1)",""],["heapq.heapify(v)","리스트를 힙으로","O(N)",""],["heapq.heappushpop","push 후 pop","O(log N)","Top-K에 유용"],["heapq.heapreplace","pop 후 push","O(log N)","heap 비어있으면 에러"],["임의 erase/find","직접 지원 안 함","-","lazy deletion 사용"]]},"vector":{"title":"list — vector 대응","problem":"Python list는 동적 배열입니다.","key":["인덱스 접근 O(1)","append/pop() amortized O(1)","중간 insert/delete O(N)"],"code":"v = []\n\nv.append(10)\nv.append(20)\n\nx = v[0]\n\nv.pop()        # 뒤 삭제 O(1)\nv.insert(1, 7) # 중간 삽입 O(N)\n\n# 특정 값 전체 삭제\ntarget = 3\nv = [x for x in v if x != target]  # O(N)","explain":["C++ vector.erase(remove(...)) 대응은 보통 리스트 컴프리헨션으로 새 리스트를 만드는 방식입니다.","메모리를 재사용해야 하면 인플레이스 compaction을 직접 구현할 수도 있습니다."],"methods":[["v.append(x)","뒤 삽입","상각 O(1)",""],["v.pop()","뒤 삭제","O(1)",""],["v[i]","인덱스 접근","O(1)",""],["v.insert(i,x)","중간 삽입","O(N)",""],["v.pop(i)","i 위치 삭제","O(N)",""],["del v[i:j]","범위 삭제","O(N)",""],["v.remove(x)","첫 x 삭제","O(N)","없으면 ValueError"],["v.sort()","제자리 정렬","O(N log N)","stable"],["v.reverse()","제자리 뒤집기","O(N)",""],["v.clear()","전체 삭제","O(N)",""]]},"deque":{"title":"collections.deque — 양끝 큐","problem":"BFS와 0-1 BFS 핵심 컨테이너.","key":["append/appendleft O(1)","pop/popleft O(1)","중간 인덱스/삭제는 비효율"],"code":"from collections import deque\n\ndq = deque()\n\ndq.append(10)\ndq.appendleft(20)\n\nx = dq.popleft()\ny = dq.pop()\n\n# 특정 값 제거: 첫 번째 일치 항목\ndq.remove(target)  # O(N)\n\n# 전체 target 제거\ndq = deque(x for x in dq if x != target)  # O(N)","explain":["deque.remove(x)는 첫 번째 x만 제거합니다.","C++ deque처럼 임의 iterator erase는 없고, 중간 조작이 잦으면 다른 설계를 검토해야 합니다."],"methods":[["dq.append(x)","뒤 삽입","O(1)",""],["dq.appendleft(x)","앞 삽입","O(1)",""],["dq.pop()","뒤 삭제","O(1)",""],["dq.popleft()","앞 삭제","O(1)","BFS 핵심"],["dq[0]/dq[-1]","양끝 접근","O(1)","중간 index 접근은 O(N) 가능"],["dq.remove(x)","첫 x 삭제","O(N)","없으면 ValueError"],["dq.rotate(k)","회전","O(k) 수준",""],["dq.clear()","전체 삭제","O(N)",""]]},"queue":{"title":"deque — queue 대응","problem":"Python 표준 queue.Queue는 스레드 동기화용이라 알고리즘 BFS에서는 deque를 사용합니다.","key":["append = push","popleft = pop front","둘 다 O(1)"],"code":"from collections import deque\n\nq = deque([start])\n\nwhile q:\n    cur = q.popleft()\n\n    for nxt in graph[cur]:\n        if visited[nxt]:\n            continue\n\n        visited[nxt] = True\n        q.append(nxt)","explain":["알고리즘 문제에서는 collections.deque가 정석입니다.","list.pop(0)은 O(N)이므로 피합니다."],"methods":[["dq.append(x)","enqueue","O(1)",""],["dq.popleft()","dequeue","O(1)",""],["dq[0]","front","O(1)",""],["len(dq)","크기","O(1)",""]]},"stack":{"title":"list — stack 대응","problem":"Python에서는 list의 append/pop을 스택으로 사용합니다.","key":["append O(1) amortized","pop() O(1)","top = stack[-1]"],"code":"stack = []\n\nstack.append(10)\nstack.append(20)\n\ntop = stack[-1]\ncur = stack.pop()","explain":["별도 stack 클래스보다 list를 바로 사용합니다."],"methods":[["st.append(x)","push","상각 O(1)",""],["st.pop()","pop","O(1)",""],["st[-1]","top","O(1)",""]]},"list":{"title":"Python list는 C++ list와 다름","problem":"Python 기본 list는 연결 리스트가 아니라 동적 배열입니다.","key":["C++ list의 iterator O(1) erase 직접 대응 없음","collections.deque도 중간 삭제는 O(N)","ID 삭제가 많으면 dict/linked-list 직접 구현 고려"],"code":"# B형에서 ID 중간 삭제가 매우 많고 순서 유지가 필요하면\n# 직접 doubly linked list를 배열/dict로 구현할 수 있다.\n\nprev = {}\nnxt = {}\nalive = set()\n\ndef link(a, b):\n    nxt[a] = b\n    prev[b] = a\n\ndef remove(node):\n    p = prev.get(node)\n    n = nxt.get(node)\n\n    if p is not None:\n        nxt[p] = n\n    if n is not None:\n        prev[n] = p\n\n    alive.discard(node)","explain":["Python 기본 list를 C++ std::list로 착각하면 안 됩니다.","연결 리스트 특성이 필요하면 직접 prev/next 인덱스를 관리하는 방식이 B형에서 더 실용적일 수 있습니다."],"methods":[["v.append(x)","Python list 뒤 삽입","상각 O(1)","Python list는 C++ vector에 가까움"],["v.pop()","마지막 삭제","O(1)",""],["v.pop(i) / del v[i]","중간 삭제","O(N)","원소 이동 발생"],["prev/next 직접 관리","연결 리스트 노드 삭제","평균 O(1)","ID→노드 연결 정보를 dict/list로 직접 저장"]]},"unordered_set":{"title":"set — unordered_set 대응","problem":"존재 여부 평균 O(1).","key":["x in s 평균 O(1)","add/discard 평균 O(1)","정렬 없음"],"code":"active = set()\n\nactive.add(item_id)\n\nif item_id in active:\n    pass\n\nactive.discard(item_id)","explain":["discard는 없어도 에러가 나지 않아 B형 삭제 API에서 편합니다.","remove는 없으면 KeyError."],"methods":[["s.add(x)","삽입","평균 O(1)",""],["x in s","탐색","평균 O(1)",""],["s.discard(x)","안전 삭제","평균 O(1)",""],["s.remove(x)","삭제","평균 O(1)","없으면 KeyError"]]},"multiset":{"title":"Counter / heapq 조합 — multiset 대체","problem":"Python 표준에는 정렬 multiset이 없습니다.","key":["개수만 필요하면 Counter","최소/최대 + 중복이면 heapq + Counter lazy deletion","bisect list는 삽입/삭제 O(N)"],"code":"from collections import Counter\nimport heapq\n\ncount = Counter()\npq = []\n\ndef add(x):\n    count[x] += 1\n    heapq.heappush(pq, x)\n\ndef remove(x):\n    if count[x] > 0:\n        count[x] -= 1\n\ndef get_min():\n    while pq and count[pq[0]] == 0:\n        heapq.heappop(pq)\n\n    return pq[0] if pq else None","explain":["C++ multiset처럼 모든 연산이 O(log N)인 표준 자료구조는 없습니다.","문제 요구가 최소값/최대값 중심이면 heap + count 방식이 자주 쓰입니다."],"methods":[["Counter[x] += 1","개수 증가","평균 O(1)",""],["Counter[x] -= 1","개수 감소","평균 O(1)","0 이하여도 key 남을 수 있음"],["heapq.heappush","정렬 후보 삽입","O(log N)",""],["lazy deletion","count==0 top 제거","누적 O(log N)",""]]},"sort":{"title":"list.sort / sorted","problem":"Python Timsort. 일반적으로 O(N log N).","key":["v.sort() 제자리","sorted(iterable) 새 리스트","key= 함수 강력"],"code":"v.sort()\n\nv.sort(reverse=True)\n\n# 두 번째 값 기준, 첫 번째 tie-break\nitems.sort(key=lambda x: (x[1], x[0]))\n\nnew_v = sorted(v)","explain":["Python sort는 stable sort입니다.","복합 정렬 조건은 key tuple로 표현하는 것이 매우 편합니다."],"methods":[["v.sort()","제자리 오름차순","O(N log N)","stable"],["v.sort(reverse=True)","내림차순","O(N log N)",""],["v.sort(key=...)","key 기준 정렬","O(N log N)",""],["sorted(iterable)","새 리스트 반환","O(N log N)",""]]},"bounds":{"title":"bisect — lower_bound / upper_bound 대응","problem":"정렬된 list에서 경계 위치를 O(log N)에 찾습니다.","key":["bisect_left = lower_bound","bisect_right = upper_bound","insort 삽입 자체는 O(N)"],"code":"from bisect import bisect_left, bisect_right, insort\n\nv = [1, 3, 3, 3, 5, 7]\n\nlo = bisect_left(v, 3)\nhi = bisect_right(v, 3)\n\ncount_3 = hi - lo\n\n# 정렬 상태 삽입\ninsort(v, 4)  # 탐색 O(log N), 실제 삽입 O(N)","explain":["bisect 자체는 빠르지만 list 중간 삽입은 O(N)입니다.","동적 업데이트가 많은 B형에서 tree set처럼 생각하면 안 됩니다."],"methods":[["bisect_left(v,x)","x 이상 첫 위치","O(log N)","v 정렬 필요"],["bisect_right(v,x)","x 초과 첫 위치","O(log N)",""],["insort(v,x)","정렬 상태 삽입","O(N)","탐색은 O(log N), 이동 O(N)"]]},"remove_erase":{"title":"Python 삭제 패턴","problem":"C++ erase-remove idiom 대신 목적에 따라 다른 방법을 씁니다.","key":["첫 번째 값 제거: list.remove O(N)","index 삭제: del/pop O(N)","전체 조건 삭제: comprehension O(N)"],"code":"# 첫 target 하나 제거\nv.remove(target)  # 없으면 ValueError\n\n# index 위치 삭제\ndel v[idx]\n\n# target 전체 삭제\nv = [x for x in v if x != target]\n\n# 조건 기반 전체 필터\nv = [x for x in v if is_valid(x)]","explain":["list.remove는 첫 번째 일치 항목만 지웁니다.","B형에서 반복 삭제가 많으면 list 자체가 잘못된 선택일 수 있습니다."],"methods":[["v.remove(x)","첫 x 제거","O(N)",""],["del v[i]","i 위치 삭제","O(N)",""],["v.pop(i)","i 위치 삭제+반환","O(N)",""],["[x for x in v if ...]","조건 필터","O(N)","새 리스트 생성"]]},"find_algo":{"title":"in / index / dict lookup","problem":"Python list 선형 탐색과 hash lookup을 구분합니다.","key":["x in list O(N)","list.index O(N)","x in set/dict 평균 O(1)"],"code":"# list: O(N)\nif target in v:\n    idx = v.index(target)\n\n# 반복 조회라면 set/dict 인덱스\nactive = set(v)\n\nif target in active:\n    pass","explain":["문법은 간단하지만 컨테이너에 따라 시간복잡도가 크게 다릅니다."],"methods":[["x in list","선형 존재 확인","O(N)",""],["list.index(x)","첫 위치","O(N)","없으면 ValueError"],["x in set/dict","해시 존재 확인","평균 O(1)",""]]},"fill_memset":{"title":"Python 초기화 / 복사","problem":"list comprehension과 곱셈 초기화를 사용합니다.","key":["1차원 [val]*N","2차원은 [[val]*M for _ in range(N)]","[[val]*M]*N 금지"],"code":"INF = 10**18\n\ndist = [INF] * N\nvisited = [False] * N\n\n# 올바른 2차원 초기화\nboard = [[0] * M for _ in range(N)]\n\n# 잘못된 방식:\n# board = [[0] * M] * N\n# -> 모든 행이 같은 list를 참조","explain":["Python에서 2차원 list 얕은 복사 실수는 매우 흔합니다.","상태 복사는 [row[:] for row in board] 또는 copy 모듈을 사용합니다."]},"array":{"title":"고정 배열은 보통 list / tuple","problem":"Python에는 C++ std::array를 별도로 쓸 필요가 거의 없습니다.","key":["수정 가능: list","불변: tuple","방향 배열은 tuple/list 둘 다 사용"],"code":"dr = (-1, 1, 0, 0)\ndc = (0, 0, -1, 1)\n\nfor d in range(4):\n    nr = r + dr[d]\n    nc = c + dc[d]","explain":["고정된 방향값은 tuple로 두면 의도가 명확합니다."],"methods":[["[0] * N","고정 길이처럼 사용할 list 생성","O(N)","수정 가능"],["(a, b, c)","불변 tuple","O(1) 생성(작은 크기)","방향 배열 등에 적합"],["arr[i]","인덱스 접근","O(1)",""]]},"string":{"title":"str — 문자열","problem":"Python str은 불변 객체입니다.","key":["인덱스 접근 O(1) 수준","문자열 중간 수정은 새 문자열 생성","join 사용 권장"],"code":"s = \"abc123\"\n\nsub = s[1:4]\n\npos = s.find(\"123\")\nif pos != -1:\n    pass\n\nx = int(\"123\")\nt = str(12345)\n\n# 문자 리스트로 수정 후 join\nchars = list(s)\nchars[0] = \"Z\"\ns = \"\".join(chars)","explain":["반복적인 문자열 += 는 상황에 따라 비용이 커질 수 있어 리스트에 모은 뒤 ''.join(...)을 사용합니다.","문자열은 hashable이라 dict/set key로 바로 사용할 수 있습니다."],"methods":[["s.find(t)","부분문자열 위치","구현 최적화됨","없으면 -1"],["s.startswith(t)","prefix 확인","O(len(t))",""],["s.endswith(t)","suffix 확인","O(len(t))",""],["s.split()","분할","O(N)",""],["sep.join(parts)","결합","총 길이에 비례","반복 + 보다 권장"],["s.replace(a,b)","치환","O(N) 수준","새 문자열"],["s[start:end]","슬라이싱","O(k)","새 문자열"]]},"bitset":{"title":"int bitmask / set — bitset 대체","problem":"고정 비트 상태는 Python int bitmask가 매우 강력합니다.","key":["Python int는 arbitrary precision","&, |, ^, <<, >>","bit_count()"],"code":"mask = 0\n\n# i번 bit 켜기\nmask |= 1 << i\n\n# 끄기\nmask &= ~(1 << i)\n\n# 확인\nif mask & (1 << i):\n    pass\n\n# 1 비트 개수\ncount = mask.bit_count()\n\n# 교집합\ninter = mask_a & mask_b","explain":["N이 수백~수천 bit라도 Python 큰 정수 연산이 내부 C로 처리돼 매우 빠른 경우가 많습니다.","부분집합 DP나 상태 압축에서 자주 사용합니다."],"methods":[["mask | 1<<i","bit set","큰 정수 word 수에 비례","작은 범위는 매우 빠름"],["mask & ~(1<<i)","bit clear","동일",""],["mask & (1<<i)","bit test","동일",""],["mask.bit_count()","1 개수","word 수에 비례","내부 C 구현"]]},"numeric":{"title":"sum / math.gcd / itertools.accumulate","problem":"Python 내장/표준 라이브러리 대응.","key":["sum(iterable)","math.gcd/lcm","itertools.accumulate"],"code":"from math import gcd, lcm\nfrom itertools import accumulate\n\ntotal = sum(v)\n\ng = gcd(a, b)\nl = lcm(a, b)\n\nprefix = list(accumulate(v))","explain":["내장 sum은 Python 루프보다 빠른 편입니다.","누적합은 직접 루프나 accumulate 둘 다 사용 가능합니다."],"methods":[["sum(v)","합","O(N)",""],["min(v)/max(v)","최소/최대","O(N)",""],["math.gcd","최대공약수","O(log min)",""],["math.lcm","최소공배수","O(log min)",""],["itertools.accumulate","누적값","O(N)","iterator 반환"]]},"algorithm_misc":{"title":"Python 기타 자주 쓰는 도구","problem":"min/max/reversed/heapq/itertools 등.","key":["min/max","reversed","itertools.permutations/combinations","enumerate/zip"],"code":"from itertools import permutations, combinations\n\nmn = min(v)\nmx = max(v)\n\nrev = list(reversed(v))\n\nfor perm in permutations(v):\n    pass\n\nfor comb in combinations(v, 3):\n    pass\n\nfor i, value in enumerate(v):\n    pass","explain":["itertools는 C 레벨 구현이라 직접 재귀보다 편하고 빠른 경우가 많습니다.","다만 경우의 수 자체가 크면 알고리즘 복잡도는 그대로입니다."],"methods":[["min(v) / max(v)","최소/최대","O(N)",""],["reversed(v)","역순 iterator","O(1) 생성, 순회 O(N)",""],["itertools.permutations","순열 생성","경우의 수에 비례","완전탐색"],["itertools.combinations","조합 생성","경우의 수에 비례","완전탐색"],["enumerate(v)","index와 값 동시 순회","O(N)",""],["zip(a, b)","여러 iterable 동시 순회","O(N)",""]]}};
+const STL_GROUPS = {"set_compare":{"title":"unordered_set / set","subtitle":"존재 여부만 빠르게 볼 것인가, 정렬 순서까지 필요할 것인가?","signal":["“해당 ID가 현재 존재하는가?” → unordered_set","“가장 작은/큰 값”, “정렬 순서”, “lower_bound” → set","삭제/삽입이 계속 발생하면서 중복 없는 후보군을 관리"],"template":"// 정렬 필요 없음: 평균 O(1)\nunordered_set<int> activeIDs;\n\n// 정렬 필요: O(log N)\nset<int> sortedIDs;\n\n// 복합 우선순위\nset<pair<int,int>> candidates;          // {score, id}\nset<tuple<int,int,int>> hurryOrders;    // {remain, time, id}","complexity":[["unordered_set.insert/find/erase","평균 O(1), 최악 O(N)"],["set.insert/find/erase","O(log N)"],["set.begin()/rbegin()","O(1) 수준으로 최소/최대 접근"],["set.lower_bound()/upper_bound()","O(log N)"]],"btype_code":"// [B형 패턴] 사용자 ID의 활성 상태 + 우선순위 후보 관리\n#include <unordered_set>\n#include <set>\n\nunordered_set<int> active;\nset<pair<int,int>> byScore; // {score, id}\n\nvoid addUser(int id, int score) {\n    active.insert(id);          // 평균 O(1)\n    byScore.insert({score, id}); // O(log N)\n}\n\nvoid updateScore(int id, int oldScore, int newScore) {\n    // set 안의 정렬 key는 자동 갱신되지 않는다.\n    byScore.erase({oldScore, id});\n    byScore.insert({newScore, id});\n}\n\nvoid removeUser(int id, int score) {\n    active.erase(id);\n    byScore.erase({score, id});\n}\n\nbool exists(int id) {\n    return active.find(id) != active.end();\n}\n\nint getMinScoreUser() {\n    if (byScore.empty()) return -1;\n    return byScore.begin()->second;\n}\n\nint getMaxScoreUser() {\n    if (byScore.empty()) return -1;\n    return byScore.rbegin()->second;\n}","pitfalls":["unordered_set은 정렬되지 않는다. begin()이 최소값이라는 보장이 없다.","set에 넣은 pair/tuple의 정렬 기준 값이 바뀌면 erase → 수정 → insert가 필요하다.","중복을 허용해야 하면 set이 아니라 multiset.","단순 존재 여부만 보는데 set을 쓰면 O(log N) 비용을 계속 지불한다."],"choice":"정렬 불필요 + 존재 확인 중심이면 unordered_set. 최소/최대/경계 탐색이 필요하면 set."},"map_compare":{"title":"unordered_map / map","subtitle":"ID → 객체를 O(1)에 찾을 것인가, Key 정렬까지 유지할 것인가?","signal":["mID, 주문번호, 객체 ID로 구조체를 바로 찾아야 함 → unordered_map","Key 순서대로 순회하거나 lower_bound가 필요 → map","B형 API에서 원본 저장소 역할로 가장 자주 쓰는 조합"],"template":"struct Order {\n    int remain;\n    int time;\n};\n\nunordered_map<int, Order> orders; // ID -> 주문\nmap<int, Order> orderedByID;      // ID 정렬 유지","complexity":[["unordered_map.find/insert/erase","평균 O(1), 최악 O(N)"],["map.find/insert/erase","O(log N)"],["map.lower_bound()/upper_bound()","O(log N)"],["operator[]","없으면 새 key 생성"]],"btype_code":"// [B형 패턴] mID로 주문 원본을 바로 찾고\n// 별도 set으로 우선순위를 관리\n#include <unordered_map>\n#include <set>\n\nstruct Order {\n    int id;\n    int remain;\n    int orderTime;\n    bool canceled;\n};\n\nunordered_map<int, Order> orders;\nset<tuple<int,int,int>> hurry;\n// {remain, orderTime, id}\n\nvoid addOrder(int id, int remain, int time) {\n    orders[id] = {id, remain, time, false};\n    hurry.insert({remain, time, id});\n}\n\nvoid consumeOne(int id) {\n    auto it = orders.find(id);\n    if (it == orders.end()) return;\n\n    Order& cur = it->second;\n\n    // 보조 인덱스에서 기존 key 제거\n    hurry.erase({cur.remain, cur.orderTime, cur.id});\n\n    cur.remain--;\n\n    if (cur.remain > 0 && !cur.canceled)\n        hurry.insert({cur.remain, cur.orderTime, cur.id});\n}\n\nvoid cancelOrder(int id) {\n    auto it = orders.find(id);\n    if (it == orders.end()) return;\n\n    Order& cur = it->second;\n    hurry.erase({cur.remain, cur.orderTime, cur.id});\n    cur.canceled = true;\n}\n\nint getUrgent() {\n    if (hurry.empty()) return -1;\n    return get<2>(*hurry.begin());\n}","pitfalls":["orders[id]로 존재 여부를 검사하면 없는 id가 새로 생긴다. find()를 사용.","unordered_map 안의 구조체를 수정할 때 Order cur = ... 로 복사하지 말고 Order& cur 사용.","ID 범위가 작고 고정이라면 unordered_map보다 배열이 더 빠르고 단순할 수 있다.","query 기준이 여러 개면 map 하나에 다 우겨넣지 말고 원본 저장소 + 보조 인덱스로 나눈다."],"choice":"대부분 B형 ID 조회는 unordered_map 또는 배열. Key 순서 자체가 문제 조건에 포함될 때 map."},"sequence_compare":{"title":"vector / deque / list","subtitle":"연속 순회, 양끝 처리, 중간 삭제 중 무엇이 핵심인가?","signal":["순회/인덱스 접근이 많음 → vector","앞/뒤 삽입·삭제가 모두 많음 → deque","특정 위치(iterator)를 이미 알고 있고 중간 삭제가 매우 잦음 → list"],"template":"vector<int> v;      // 연속 메모리\ndeque<int> dq;       // 양끝 O(1)\nlist<int> li;        // iterator 기반 중간 삭제 O(1)","complexity":[["vector[i]","O(1)"],["vector 중간 erase","O(N)"],["deque push/pop front/back","O(1)"],["deque 중간 erase","O(N)"],["list erase(iterator)","O(1)"],["list 값 탐색","O(N)"]],"btype_code":"// [B형 패턴 1] deque에서 특정 값 전체 삭제\ndeque<int> dq = {1, 3, 2, 3, 4};\nint target = 3;\n\ndq.erase(\n    remove(dq.begin(), dq.end(), target),\n    dq.end()\n); // 전체 O(N)\n\n// [B형 패턴 2] 특정 ID 중간 삭제가 매우 많으면\n// list + ID -> iterator\nlist<int> waiting;\nunordered_map<int, list<int>::iterator> pos;\n\nvoid add(int id) {\n    waiting.push_back(id);\n    pos[id] = prev(waiting.end());\n}\n\nvoid removeById(int id) {\n    auto it = pos.find(id);\n    if (it == pos.end()) return;\n\n    waiting.erase(it->second); // O(1)\n    pos.erase(it);\n}\n\n// [B형 패턴 3] 그래프 인접 리스트\nvector<pair<int,int>> graph[MAX_N];\n// {next, weight}\ngraph[u].push_back({v, w});","pitfalls":["deque라고 해서 중간 삭제가 O(1)은 아니다. erase/remove는 O(N).","vector의 erase(remove(...))도 O(N)이다. API마다 반복하면 병목이 된다.","list는 iterator를 모르면 원하는 ID를 찾는 데 O(N)이므로 장점이 사라진다.","vector.clear()는 size만 0으로 만들고 capacity를 보통 유지한다."],"choice":"기본은 vector. 양끝 큐 성격이면 deque. 위치를 직접 저장하며 중간 삭제가 핵심이면 list."},"queue_compare":{"title":"queue / deque / priority_queue","subtitle":"들어온 순서인가, 0/1 비용인가, 우선순위인가?","signal":["모든 간선 비용 동일 + 최단거리 → queue(BFS)","가중치가 0/1 → deque(0-1 BFS)","가장 작은 비용/가장 높은 우선순위를 반복 추출 → priority_queue"],"template":"queue<int> q;\n\ndeque<int> dq;\n\npriority_queue<int> maxPQ;\n\npriority_queue<\n    pair<int,int>,\n    vector<pair<int,int>>,\n    greater<pair<int,int>>\n> minPQ;","complexity":[["queue push/pop/front","O(1)"],["deque push_front/back","O(1)"],["priority_queue top","O(1)"],["priority_queue push/pop","O(log N)"],["priority_queue 중간 삭제","지원 안 함"]],"btype_code":"// [B형 패턴] 값이 갱신/삭제되는 우선순위 후보\nstruct Node {\n    int score;\n    int id;\n    int ver;\n\n    bool operator<(const Node& other) const {\n        if (score != other.score)\n            return score < other.score; // score 큰 순\n        return id > other.id;           // id 작은 순\n    }\n};\n\npriority_queue<Node> pq;\nint version[MAX_ID];\nbool removed[MAX_ID];\n\nvoid update(int id, int score) {\n    version[id]++;\n    removed[id] = false;\n    pq.push({score, id, version[id]});\n}\n\nvoid eraseItem(int id) {\n    removed[id] = true;\n}\n\nint getBest() {\n    while (!pq.empty()) {\n        Node cur = pq.top();\n\n        // 오래된 데이터는 실제 삭제하지 않고 top에서 제거\n        if (removed[cur.id] ||\n            cur.ver != version[cur.id]) {\n            pq.pop();\n            continue;\n        }\n\n        return cur.id;\n    }\n    return -1;\n}\n\n// 다익스트라도 같은 lazy deletion 발상\n// if (cost != dist[cur]) continue;","pitfalls":["priority_queue.pop()은 값을 반환하지 않는다. top()으로 읽고 pop().","priority_queue는 중간 erase/find를 지원하지 않는다.","갱신이 많은 우선순위 문제에서 기존 노드를 찾으려 하지 말고 lazy deletion을 검토.","임의 삭제를 정확히 O(log N)에 해야 한다면 set이 더 적합할 수 있다."],"choice":"FIFO는 queue, 양끝 제어는 deque, 현재 최우선 하나를 반복해서 뽑는다면 priority_queue."},"pair_tuple":{"title":"pair / tuple","subtitle":"문제의 우선순위 문장을 그대로 자료형으로 옮기기","signal":["좌표 {r,c}, 간선 {next,weight}, 다익스트라 {cost,node} → pair","우선순위 조건이 3개 이상 → tuple","set / priority_queue에서 custom comparator를 줄이고 싶음"],"template":"pair<int,int> p = {score, id};\n\ntuple<int,int,int> t = {\n    remain,\n    orderTime,\n    id\n};\n\n// C++17 구조적 바인딩\nauto [a, b] = p;\nauto [x, y, z] = t;","complexity":[["pair 비교","first → second"],["tuple 비교","0번째 → 1번째 → 2번째 ..."],["get<k>(tuple)","O(1)"]],"btype_code":"// [B형 패턴] 문제 우선순위:\n// 1. 남은 작업 수가 작은 순\n// 2. 주문 시간이 빠른 순\n// 3. ID가 작은 순\n\nset<tuple<int,int,int>> urgent;\n\nurgent.insert({remain, orderTime, id});\n\nauto [r, t, id] = *urgent.begin();\n\n// 상태 변경 시 기존 tuple 삭제\nurgent.erase({r, t, id});\nr--;\nurgent.insert({r, t, id});\n\n// 내림차순 조건이 필요하면\n// 1) 음수 key 사용\nset<pair<int,int>> highScore;\nhighScore.insert({-score, id});\n\n// begin()이 score 큰 후보가 됨","pitfalls":["pair/tuple 기본 정렬은 오름차순 사전식이다.","내림차순 조건을 섞을 때 음수 변환이 안전한지(int overflow 등) 확인.","우선순위가 복잡해지면 comparator를 별도 struct로 만드는 편이 가독성이 좋을 수 있다."],"choice":"2개면 pair, 3개 이상이면 tuple을 먼저 검토. 문제 문장의 tie-break 순서를 그대로 넣는다."},"algorithm_compare":{"title":"find / lower_bound / remove / sort","subtitle":"STL 알고리즘을 쓰기 전에 컨테이너와 호출 횟수를 같이 보기","signal":["한 번 정렬 후 여러 이분 탐색 → sort + lower_bound","특정 값 전체 삭제 → remove + erase","단순 선형 탐색 → find","query가 수천 번인데 find/remove가 반복되면 자료구조를 다시 설계"],"template":"sort(v.begin(), v.end());\n\nauto lo = lower_bound(v.begin(), v.end(), x);\nauto hi = upper_bound(v.begin(), v.end(), x);\n\nv.erase(\n    remove(v.begin(), v.end(), target),\n    v.end()\n);\n\nauto it = find(v.begin(), v.end(), target);","complexity":[["sort","O(N log N)"],["lower_bound/upper_bound","O(log N) — random access 기준"],["find","O(N)"],["remove + erase","O(N)"]],"btype_code":"// [B형 판단 예시]\n//\n// 데이터 N = 100,000\n// query() 호출 = 10,000\n//\n// query마다 find(vector...) 한다면\n// 최악 100,000 * 10,000 = 10^9 수준\n//\n// → ID 조회용 인덱스를 따로 만든다.\n\nvector<int> ids;\nunordered_map<int,int> indexById;\n\n// 삽입 시 위치 저장\nvoid add(int id) {\n    indexById[id] = (int)ids.size();\n    ids.push_back(id);\n}\n\n// 단, vector 중간 삭제 시 index가 전부 밀리므로\n// 삭제까지 자주 있다면 이 구조는 적합하지 않을 수 있음.\n\n// 정렬된 정적 데이터라면:\nsort(ids.begin(), ids.end());\n\nbool existsByBinarySearch(int id) {\n    return binary_search(ids.begin(), ids.end(), id);\n}","pitfalls":["lower_bound는 정렬되지 않은 vector에 쓰면 안 된다.","std::lower_bound(set.begin(), set.end())보다 set.lower_bound()를 써야 O(log N) 보장에 적합.","remove는 실제 size를 줄이지 않는다. erase가 뒤에 필요.","함수 하나의 복잡도가 작아 보여도 API 호출 횟수와 곱해서 판단한다."],"choice":"정적/적은 변경 데이터면 알고리즘 함수가 강력. 동적 API 문제면 자료구조 인덱싱 설계가 더 중요."}};
+const PY_STL_GROUPS = {"set_compare":{"title":"set / 정렬 집합 대체","subtitle":"Python set은 C++ unordered_set에 가깝고, C++ set 직접 대응은 표준 라이브러리에 없습니다.","signal":["존재 여부만 빠르게 확인 → set","정렬 최소/최대가 반복 → heapq + lazy deletion 고려","정렬된 list에서 경계 탐색 → bisect"],"template":"active = set()\n\n# 정렬 인덱스가 필요하면\nimport heapq\npq = []\n\n# 또는 정적/변경 적은 데이터\nfrom bisect import bisect_left, insort\nsorted_values = []","complexity":[["x in set / add / discard","평균 O(1)"],["min(set) / max(set)","O(N)"],["heapq push/pop","O(log N)"],["bisect_left","O(log N), 삽입은 O(N)"]],"btype_code":"# [Python B형 패턴]\n# 활성 여부 + 점수 기준 최소 후보\n\nimport heapq\n\nactive = set()\nscore = {}\nversion = {}\npq = []\n\ndef add_user(user_id, value):\n    active.add(user_id)\n    score[user_id] = value\n    version[user_id] = version.get(user_id, 0) + 1\n\n    heapq.heappush(\n        pq,\n        (value, user_id, version[user_id])\n    )\n\ndef update_score(user_id, value):\n    score[user_id] = value\n    version[user_id] += 1\n\n    heapq.heappush(\n        pq,\n        (value, user_id, version[user_id])\n    )\n\ndef remove_user(user_id):\n    active.discard(user_id)\n\ndef get_min_user():\n    while pq:\n        value, user_id, ver = pq[0]\n\n        if (\n            user_id not in active\n            or version.get(user_id) != ver\n            or score.get(user_id) != value\n        ):\n            heapq.heappop(pq)\n            continue\n\n        return user_id\n\n    return -1","pitfalls":["Python set은 정렬 컨테이너가 아니다.","min(set), max(set)는 O(N). 반복 query에서는 heap 등 인덱스가 필요.","bisect로 위치 탐색은 O(log N)이지만 list 삽입/삭제가 O(N).","외부 sortedcontainers는 시험 환경에서 사용할 수 없다고 가정하는 것이 안전."],"choice":"존재 여부는 set. 정렬된 최상위 후보는 heapq + lazy deletion. 정적 정렬 데이터는 sorted/bisect."},"map_compare":{"title":"dict / 정렬 Key 관리","subtitle":"Python dict가 C++ unordered_map에 대응. C++ map과 같은 Tree Map은 표준에 없음.","signal":["ID → 객체 조회 → dict","기본값 자동 생성 → defaultdict","빈도 집계 → Counter","Key 정렬이 가끔 필요 → sorted(dict)"],"template":"from collections import defaultdict, Counter\n\ndata = {}                     # dict\ngroups = defaultdict(list)    # 기본값 자동 생성\ncount = Counter()             # 빈도","complexity":[["dict get/set/in/pop","평균 O(1)"],["sorted(dict)","O(N log N)"],["Counter update","평균 O(1) per key"],["defaultdict 접근","평균 O(1)"]],"btype_code":"# [Python B형 패턴]\n# ID -> 원본 정보 + heapq 보조 인덱스\n\nimport heapq\n\norders = {}\npq = []\n\ndef add_order(order_id, remain, order_time):\n    orders[order_id] = {\n        \"remain\": remain,\n        \"time\": order_time,\n        \"version\": 1,\n        \"active\": True,\n    }\n\n    heapq.heappush(\n        pq,\n        (remain, order_time, order_id, 1)\n    )\n\ndef consume_one(order_id):\n    cur = orders.get(order_id)\n    if cur is None or not cur[\"active\"]:\n        return\n\n    cur[\"remain\"] -= 1\n    cur[\"version\"] += 1\n\n    if cur[\"remain\"] > 0:\n        heapq.heappush(\n            pq,\n            (\n                cur[\"remain\"],\n                cur[\"time\"],\n                order_id,\n                cur[\"version\"],\n            )\n        )\n\ndef get_urgent():\n    while pq:\n        remain, time, order_id, ver = pq[0]\n        cur = orders.get(order_id)\n\n        if (\n            cur is None\n            or not cur[\"active\"]\n            or cur[\"version\"] != ver\n            or cur[\"remain\"] != remain\n        ):\n            heapq.heappop(pq)\n            continue\n\n        return order_id\n\n    return -1","pitfalls":["dict[key]는 없는 key에서 KeyError. 기본값이 필요하면 get/defaultdict 사용.","dict는 삽입 순서를 유지하지만 Key 정렬 자료구조가 아니다.","객체를 dict로 많이 만들면 메모리 비용이 커질 수 있어 list/tuple/배열 표현이 더 빠른 경우도 있음."],"choice":"ID 원본 저장소는 dict. 기본값 생성은 defaultdict. 빈도는 Counter. 정렬 query는 별도 인덱스를 설계."},"sequence_compare":{"title":"list / deque / 직접 연결 구조","subtitle":"Python list는 vector, deque는 양끝 큐. C++ list 직접 대응은 보통 직접 설계.","signal":["인덱스/순회 → list","양끝 삽입/삭제 → deque","ID 기반 중간 삭제 + 순서 유지 → prev/next 직접 관리"],"template":"from collections import deque\n\nv = []          # vector 대응\ndq = deque()    # queue/deque 대응\n\nprev = {}\nnxt = {}        # linked structure 직접 구현","complexity":[["list append/pop()","amortized O(1)"],["list 중간 insert/del","O(N)"],["deque append/popleft","O(1)"],["deque remove(x)","O(N)"],["dict prev/next 연결 삭제","평균 O(1)"]],"btype_code":"# [Python B형 패턴]\n# ID로 O(1) 삭제 가능한 연결 순서\n\nprev_node = {}\nnext_node = {}\nalive = set()\n\ndef connect(a, b):\n    next_node[a] = b\n    prev_node[b] = a\n\ndef remove_node(x):\n    if x not in alive:\n        return\n\n    p = prev_node.get(x)\n    n = next_node.get(x)\n\n    if p is not None:\n        next_node[p] = n\n\n    if n is not None:\n        prev_node[n] = p\n\n    alive.discard(x)\n\n# list에서 특정 값 전체 제거\nv = [x for x in v if x != target]\n\n# deque에서 전체 제거\nfrom collections import deque\ndq = deque(x for x in dq if x != target)","pitfalls":["list.pop(0)은 O(N). BFS에 쓰지 말 것.","deque는 중간 삭제용 컨테이너가 아니다.","Python list는 C++ std::list가 아니라 vector에 가깝다.","중간 삭제가 정말 핵심이면 인덱스 기반 연결 리스트를 직접 만드는 방식이 강력."],"choice":"기본 배열은 list, BFS/양끝은 deque, 위치 기반 O(1) 삭제가 핵심이면 prev/next를 직접 관리."},"queue_compare":{"title":"deque / heapq","subtitle":"FIFO는 deque, 우선순위는 heapq.","signal":["BFS → deque","0-1 BFS → deque appendleft/append","다익스트라/Top-K → heapq"],"template":"from collections import deque\nimport heapq\n\nq = deque()\npq = []","complexity":[["deque append/popleft","O(1)"],["deque appendleft/pop","O(1)"],["heapq pq[0]","O(1)"],["heappush/heappop","O(log N)"]],"btype_code":"# [Python B형 패턴]\n# 최대 점수 우선 + lazy deletion\n\nimport heapq\n\npq = []\nversion = {}\nactive = set()\n\ndef update(item_id, score):\n    version[item_id] = version.get(item_id, 0) + 1\n    active.add(item_id)\n\n    heapq.heappush(\n        pq,\n        (-score, item_id, version[item_id])\n    )\n\ndef remove(item_id):\n    active.discard(item_id)\n\ndef get_best():\n    while pq:\n        neg_score, item_id, ver = pq[0]\n\n        if (\n            item_id not in active\n            or version.get(item_id) != ver\n        ):\n            heapq.heappop(pq)\n            continue\n\n        return item_id\n\n    return -1","pitfalls":["heapq는 최소 힙. 최대 힙은 보통 음수 key.","임의 삭제/decrease-key가 없다.","queue.Queue는 멀티스레드용이라 알고리즘 BFS에는 deque가 더 적합.","list.pop(0)은 O(N)."],"choice":"FIFO/0-1 BFS는 deque, 최우선 후보/다익스트라는 heapq."},"pair_tuple":{"title":"tuple","subtitle":"Python에서는 pair와 tuple을 모두 tuple로 해결.","signal":["(r,c) 좌표","(cost,node) heapq key","(remain,time,id) 복합 우선순위"],"template":"point = (r, c)\nedge = (next_node, weight)\npriority = (remain, order_time, item_id)\n\na, b = point\nx, y, z = priority","complexity":[["tuple 생성/분해","원소 수에 비례"],["비교","앞 원소부터 사전식"],["dict/set key 사용","평균 O(1) hash lookup"]],"btype_code":"# [Python B형 패턴]\n# tie-break를 tuple에 그대로 넣기\n\nimport heapq\n\npq = []\n\n# 1. remain 작은 순\n# 2. time 빠른 순\n# 3. id 작은 순\nheapq.heappush(\n    pq,\n    (remain, order_time, item_id, version)\n)\n\nremain, order_time, item_id, ver = heapq.heappop(pq)\n\n# 최대 score 우선이면 음수\nheapq.heappush(pq, (-score, item_id))","pitfalls":["tuple 안에 서로 비교 불가능한 타입이 tie 위치에서 만나면 TypeError 가능.","heapq key 뒤에 dict 객체 등을 바로 넣지 말고 tie-break용 id를 같이 넣는 것이 안전.","tuple은 immutable이라 hash key로 쓰기 좋다."],"choice":"복합 우선순위는 tuple이 기본. 문제의 tie-break 순서를 그대로 tuple 순서로 옮긴다."},"algorithm_compare":{"title":"in / bisect / remove / sort","subtitle":"Python 문법은 간단하지만 컨테이너별 복잡도 차이를 반드시 봐야 합니다.","signal":["정렬 list 경계 검색 → bisect","조건 삭제 → comprehension","정렬 → list.sort/sorted","반복 존재 조회 → set/dict"],"template":"from bisect import bisect_left, bisect_right\n\nv.sort()\n\nlo = bisect_left(v, x)\nhi = bisect_right(v, x)\n\nv = [value for value in v if value != target]\n\nexists = target in active_set","complexity":[["list.sort","O(N log N)"],["bisect_left/right","O(log N)"],["list 'in'","O(N)"],["set/dict 'in'","평균 O(1)"],["comprehension filter","O(N)"]],"btype_code":"# [Python B형 판단]\n#\n# query 10,000번마다\n# if id in ids_list:      # O(N)\n# 을 하면 위험하다.\n\nids_list = []\nactive_ids = set()\n\ndef add(id):\n    ids_list.append(id)\n    active_ids.add(id)\n\ndef exists(id):\n    return id in active_ids  # 평균 O(1)\n\n# 정적 정렬 데이터라면\nids_list.sort()\n\nfrom bisect import bisect_left\n\ndef exists_sorted(id):\n    i = bisect_left(ids_list, id)\n    return i < len(ids_list) and ids_list[i] == id","pitfalls":["bisect 위치 탐색은 O(log N)이지만 insort는 list 이동 때문에 O(N).","list.remove(x)는 첫 x만 삭제하고 없으면 ValueError.","전체 삭제는 comprehension이 명확하지만 새 리스트를 만든다.","문법보다 API 호출 횟수 × 복잡도를 먼저 계산."],"choice":"정적 데이터는 sort+bisect. 동적 존재 조회는 set/dict. 동적 우선순위는 heapq+lazy deletion."}};
+const PY_CARD_META = {"unordered_map":["dict","dict: Key → Value 해시 매핑","평균 조회/삽입/삭제 O(1)"],"map":["dict + sorted / bisect","Python 표준에는 C++ Tree Map 직접 대응이 없음","조회 평균 O(1), 정렬 O(N log N)"],"set":["set","해시 기반 집합 — C++ unordered_set에 가까움","평균 add/in/discard O(1)"],"pair":["tuple","(a, b)로 2개 값을 묶고 사전식 비교","비교는 앞 원소부터"],"tuple":["tuple","복합 우선순위 (remain, time, id)","앞 원소부터 사전식 비교"],"priority_queue":["heapq","최소 힙 / 최대 힙은 음수 key","top O(1), push/pop O(log N)"],"vector":["list","동적 배열 / 그래프 인접 리스트","접근 O(1), 중간 삭제 O(N)"],"deque":["collections.deque","BFS / 0-1 BFS / 양끝 큐","append/popleft O(1)"],"queue":["collections.deque","FIFO — BFS에서는 queue.Queue 대신 deque","append/popleft O(1)"],"stack":["list","append/pop으로 스택 구현","push/pop O(1)"],"list":["직접 prev/next 구조","Python list는 연결 리스트가 아님","직접 연결 시 ID 삭제 평균 O(1)"],"unordered_set":["set","존재 여부를 빠르게 확인","평균 O(1)"],"multiset":["Counter + heapq","중복 개수 + 최소/최대 후보 관리","count 평균 O(1), heap O(log N)"],"sort":["list.sort / sorted","stable 정렬 + key 함수","O(N log N)"],"bounds":["bisect","bisect_left / bisect_right","탐색 O(log N), 삽입 O(N)"],"remove_erase":["삭제 / comprehension","remove, del, 조건 필터","대부분 O(N)"],"find_algo":["in / index / dict","컨테이너별 조회 복잡도 구분","list O(N), set/dict 평균 O(1)"],"fill_memset":["list 초기화","[val]*N / 2차원 comprehension","O(N)"],"array":["list / tuple","고정 값은 tuple, 수정 가능하면 list","접근 O(1)"],"string":["str","불변 문자열 / slicing / join","연산별 상이"],"bitset":["int bitmask","Python 큰 정수를 비트셋처럼 사용","bit 연산 매우 빠름"],"numeric":["sum / math / accumulate","합계·gcd·누적합","대부분 O(N) 또는 O(log N)"],"algorithm_misc":["itertools / built-ins","순열·조합·min/max·enumerate","연산별 상이"]};
+const PY_ALGO_UI = {"grid":["이 그림이면 이동 비용부터 확인","→ deque BFS / heapq Dijkstra","비용이 모두 1이면 collections.deque BFS, 서로 다르면 heapq 다익스트라."],"dijkstra":["정점별 최단거리를 저장","→ heapq Dijkstra","dist 리스트 + (cost,node) tuple 최소 힙. 오래된 항목은 dist 비교로 제거."],"zeroone":["heapq보다 deque가 더 간단","→ 0-1 BFS","비용 0은 appendleft, 비용 1은 append."],"component":["“몇 개의 그룹인가?”","→ deque BFS / 반복 DFS","재귀 깊이가 크면 Python에서는 반복형 탐색이 더 안전."],"uf":["간선 전체를 매번 탐색하지 말기","→ Union-Find","parent/size list + 경로 압축으로 구현."],"pq":["정렬 전체를 매번 하지 말기","→ heapq + Lazy Deletion","version / active set / dict를 같이 두어 갱신·삭제 처리."],"segment":["배열 전체를 매번 순회하지 않기","→ Fenwick / Segment Tree","Python에서도 직접 구현. 합만 필요하면 Fenwick이 짧고 빠름."],"trie":["문자열 전체 비교를 반복하지 않기","→ Trie","dict child 또는 배열형 Trie. 노드가 많으면 객체 비용까지 고려."]};
+
+let currentLanguage = 'cpp';
+try {
+  currentLanguage = localStorage.getItem('btype-language') || 'cpp';
+} catch (e) {
+  currentLanguage = 'cpp';
+}
+let currentFilter = 'all';
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => [...document.querySelectorAll(sel)];
+
+const modal = $('#modal');
+const groupModal = $('#groupModal');
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function getCase(id) {
+  return currentLanguage === 'python' ? PY_CASES[id] : CASES[id];
+}
+
+function getGroup(id) {
+  return currentLanguage === 'python' ? PY_STL_GROUPS[id] : STL_GROUPS[id];
+}
+
+function captureOriginalUI() {
+  $$('.stl-card').forEach(card => {
+    if (card.dataset.captured) return;
+    card.dataset.captured = '1';
+    card.dataset.cppTitle = card.querySelector('h3')?.textContent || '';
+    card.dataset.cppSig = card.querySelector('.sig')?.textContent || '';
+    card.dataset.cppDesc = card.querySelector('.desc')?.textContent || '';
+    card.dataset.cppCx = card.querySelector('.cx')?.textContent || '';
+  });
+
+  $$('.visual[data-case]').forEach(visual => {
+    const card = visual.closest('.card');
+    if (!card || card.dataset.captured) return;
+    card.dataset.captured = '1';
+    card.dataset.cppHeading = card.querySelector('h3')?.textContent || '';
+    card.dataset.cppTag = card.querySelector('.tag')?.textContent || '';
+    card.dataset.cppWhy = card.querySelector('.why')?.textContent || '';
+  });
+}
+
+function renderLanguageUI() {
+  const python = currentLanguage === 'python';
+  const lang = python ? 'Python' : 'C++';
+
+  $$('#langSwitch button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === currentLanguage);
+  });
+
+  $('#brandTitle').textContent = `B형(Pro) ${lang} 풀이 팁`;
+  const hero = $('#heroTitle');
+  hero.childNodes[0].nodeValue = `B형(Pro) ${lang} 풀이 팁 `;
+  $('#heroLangBadge').textContent = lang;
+  $('#cheatTitle').textContent = python
+    ? '📚 B형 Python 자료구조 · 표준 라이브러리 치트시트'
+    : '📚 B형 C++ STL 치트시트';
+  $('#libNavButton').textContent = python
+    ? '📚 Python 자료구조 치트시트'
+    : '📚 C++ STL 치트시트';
+  $('#groupNavButton').textContent = python
+    ? '🔥 B형 Python 선택 가이드'
+    : '🔥 B형 STL 선택 가이드';
+
+  $('#langCallout').innerHTML = python
+    ? '<b>Python 모드:</b> C++ 코드를 문법만 번역하지 않고, <b>dict / set / collections.deque / heapq / bisect / Counter</b> 등 Python 표준 라이브러리만으로 B형에서 실제로 설계하는 방식으로 바뀝니다. 특히 C++ set/map의 직접 대응이 없다는 점과 heapq lazy deletion을 함께 설명합니다.'
+    : '<b>업데이트:</b> 각 카드의 <b>이미지를 클릭하면</b> 해당 유형에 맞는 <b>B형 스타일 실제 C++ 코드 예시 + 추가 해설</b>을 모달로 볼 수 있습니다.';
+
+  $('#graphDecision').innerHTML = python
+    ? `<h3>격자 / 그래프에서 최단거리?</h3><ol>
+        <li><b>이동 비용이 전부 같은가?</b> → collections.deque BFS</li>
+        <li><b>가중치가 0 또는 1뿐인가?</b> → deque 0-1 BFS</li>
+        <li><b>가중치가 모두 0 이상인가?</b> → heapq 다익스트라</li>
+        <li><b>단순 연결 그룹인가?</b> → deque BFS / 반복 DFS</li>
+       </ol>`
+    : `<h3>격자 / 그래프에서 최단거리?</h3><ol>
+        <li><b>이동 비용이 전부 같은가?</b> → 같으면 BFS</li>
+        <li><b>가중치가 0 또는 1뿐인가?</b> → 0-1 BFS</li>
+        <li><b>가중치가 모두 0 이상인가?</b> → 다익스트라</li>
+        <li><b>가중치 대신 단순 연결 그룹인가?</b> → DFS/BFS로 연결 요소</li>
+       </ol>`;
+
+  $('#apiDecision').innerHTML = python
+    ? `<h3>API형 문제인가?</h3><ol>
+        <li><b>ID로 바로 찾아야 하나?</b> → list index / dict</li>
+        <li><b>최우선 후보를 반복 조회?</b> → heapq + lazy deletion</li>
+        <li><b>존재 여부만 필요한가?</b> → set</li>
+        <li><b>정렬된 정적 데이터 경계 조회?</b> → sort + bisect</li>
+       </ol>`
+    : `<h3>API형 문제인가?</h3><ol>
+        <li><b>ID로 바로 찾아야 하나?</b> → 배열 / unordered_map</li>
+        <li><b>정렬 순서 조회가 필요한가?</b> → set / map / priority_queue</li>
+        <li><b>중간 삭제가 있는가?</b> → set 또는 PQ + lazy deletion</li>
+        <li><b>구간 질의가 반복되는가?</b> → Fenwick / Segment Tree</li>
+       </ol>`;
+
+  // 알고리즘 카드 본문 전환
+  $$('.visual[data-case]').forEach(visual => {
+    const id = visual.dataset.case;
+    const card = visual.closest('.card');
+    if (!card) return;
+
+    if (python && PY_ALGO_UI[id]) {
+      const [heading, tag, why] = PY_ALGO_UI[id];
+      const h3 = card.querySelector('h3');
+      const tagEl = card.querySelector('.tag');
+      const whyEl = card.querySelector('.why');
+      if (h3) h3.textContent = heading;
+      if (tagEl) tagEl.textContent = tag;
+      if (whyEl) whyEl.textContent = why;
+    } else {
+      const h3 = card.querySelector('h3');
+      const tagEl = card.querySelector('.tag');
+      const whyEl = card.querySelector('.why');
+      if (h3) h3.textContent = card.dataset.cppHeading || h3.textContent;
+      if (tagEl) tagEl.textContent = card.dataset.cppTag || tagEl.textContent;
+      if (whyEl) whyEl.textContent = card.dataset.cppWhy || whyEl.textContent;
+    }
+  });
+
+  // 상세 라이브러리 카드 전환
+  $$('.stl-card').forEach(card => {
+    const id = card.dataset.case;
+    const h3 = card.querySelector('h3');
+    const sig = card.querySelector('.sig');
+    const desc = card.querySelector('.desc');
+    const cx = card.querySelector('.cx');
+
+    if (python && PY_CARD_META[id]) {
+      const [title, signature, description] = PY_CARD_META[id];
+      if (h3) h3.textContent = title;
+      if (sig) sig.textContent = signature;
+      if (desc) desc.textContent = description;
+      if (cx) cx.textContent = PY_CASES[id]?.methods?.[0]?.[2] || cx.textContent;
+    } else {
+      if (h3) h3.textContent = card.dataset.cppTitle || h3.textContent;
+      if (sig) sig.textContent = card.dataset.cppSig || sig.textContent;
+      if (desc) desc.textContent = card.dataset.cppDesc || desc.textContent;
+      if (cx) cx.textContent = card.dataset.cppCx || cx.textContent;
+    }
+  });
+
+  // 비교 선택 가이드 전환
+  $$('.group-card').forEach(card => {
+    const g = getGroup(card.dataset.group);
+    if (!g) return;
+    const h3 = card.querySelector('h3');
+    const p = card.querySelector('p');
+    const mini = card.querySelector('.mini');
+
+    if (h3) h3.textContent = g.title;
+    if (p) p.textContent = g.subtitle;
+    if (mini) {
+      mini.innerHTML = g.signal.slice(0, 3)
+        .map(s => `<span>${escapeHtml(s.split('→')[0].trim())}</span>`)
+        .join('');
+    }
+  });
+
+  // 열려 있는 모달도 즉시 같은 항목의 새 언어로 갱신
+  if (modal.classList.contains('show') && modal.dataset.caseId) {
+    openCase(modal.dataset.caseId);
+  }
+  if (groupModal.classList.contains('show') && groupModal.dataset.groupId) {
+    openGroup(groupModal.dataset.groupId);
+  }
+}
+
+function applyFilter() {
+  const q = ($('#search').value || '').trim().toLowerCase();
+
+  $$('[data-cat]').forEach(el => {
+    const cats = (el.dataset.cat || '').split(' ').filter(Boolean);
+    const searchable = (
+      el.innerText + ' ' +
+      (el.dataset.key || '') + ' ' +
+      (el.dataset.case || '')
+    ).toLowerCase();
+
+    const okCat = currentFilter === 'all' || cats.includes(currentFilter);
+    const okQuery = !q || searchable.includes(q);
+    el.classList.toggle('hidden', !(okCat && okQuery));
+  });
+}
+
+function openCase(id) {
+  const c = getCase(id);
+  if (!c) return;
+
+  modal.dataset.caseId = id;
+  $('#modalTitle').textContent = c.title;
+  $('#modalProblem').textContent = c.problem;
+  $('#modalCode').textContent = c.code || '';
+  $('#modalExplain').innerHTML = (c.explain || []).map(v => `<li>${escapeHtml(v)}</li>`).join('');
+  $('#modalKey').innerHTML = (c.key || []).map(v => `<li>${escapeHtml(v)}</li>`).join('');
+  $('#modalPills').innerHTML = `
+    <span class="pill">${currentLanguage === 'python' ? 'Python B형 코드 예시' : 'C++ B형 코드 예시'}</span>
+    <span class="pill">핵심 포인트 정리</span>
+  `;
+
+  const methodSection = $('#methodSection');
+  const methodRows = $('#methodRows');
+
+  if (c.methods && c.methods.length) {
+    methodSection.style.display = 'block';
+    methodRows.innerHTML = c.methods.map(row => `
+      <tr>
+        <td>${escapeHtml(row[0])}</td>
+        <td>${escapeHtml(row[1])}</td>
+        <td>${escapeHtml(row[2])}</td>
+        <td>${escapeHtml(row[3] || '')}</td>
+      </tr>
+    `).join('');
+  } else {
+    methodSection.style.display = 'none';
+    methodRows.innerHTML = '';
+  }
+
+  modal.classList.add('show');
+}
+
+function openGroup(id) {
+  const g = getGroup(id);
+  if (!g) return;
+
+  groupModal.dataset.groupId = id;
+  $('#groupTitle').textContent = g.title;
+  $('#groupSubtitle').textContent = g.subtitle;
+  $('#groupSignals').innerHTML = g.signal.map(x => `<li>${escapeHtml(x)}</li>`).join('');
+  $('#groupTemplate').textContent = g.template;
+  $('#groupComplexity').innerHTML = g.complexity.map(row =>
+    `<div>${escapeHtml(row[0])}</div><div>${escapeHtml(row[1])}</div>`
+  ).join('');
+  $('#groupCode').textContent = g.btype_code;
+  $('#groupPitfalls').innerHTML = g.pitfalls.map(x => `<li>${escapeHtml(x)}</li>`).join('');
+  $('#groupChoice').textContent = g.choice;
+
+  groupModal.classList.add('show');
+}
+
+captureOriginalUI();
+
+// 언어 토글
+$$('#langSwitch button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentLanguage = btn.dataset.lang;
+    try {
+      localStorage.setItem('btype-language', currentLanguage);
+    } catch (e) {
+      // file:// 또는 제한된 미리보기 환경에서도 기능은 계속 동작
+    }
+    renderLanguageUI();
+    applyFilter();
+  });
+});
+
+// 필터: data-filter가 있는 버튼만 처리
+$$('.nav button[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $$('.nav button[data-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter || 'all';
+    applyFilter();
+  });
+});
+
+// 스크롤 메뉴
+$$('[data-scroll]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById(btn.dataset.scroll);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// 검색
+$('#search').addEventListener('input', applyFilter);
+
+// 다크 모드
+$('#theme').addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  $('#theme').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+});
+
+// 알고리즘 이미지
+$$('.visual[data-case]').forEach(el => {
+  el.addEventListener('click', () => openCase(el.dataset.case));
+});
+
+// 기존 상세 예시 버튼
+$$('.open-case[data-case]').forEach(el => {
+  el.addEventListener('click', () => openCase(el.dataset.case));
+});
+
+// 라이브러리 상세 카드
+$$('.stl-card[data-case]').forEach(el => {
+  el.addEventListener('click', () => openCase(el.dataset.case));
+});
+
+// B형 선택 가이드
+$$('.group-card[data-group]').forEach(el => {
+  el.addEventListener('click', () => openGroup(el.dataset.group));
+});
+
+// 모달 닫기
+$('#closeModal').addEventListener('click', () => {
+  modal.classList.remove('show');
+  modal.dataset.caseId = '';
+});
+modal.addEventListener('click', e => {
+  if (e.target === modal) {
+    modal.classList.remove('show');
+    modal.dataset.caseId = '';
+  }
+});
+
+$('#closeGroupModal').addEventListener('click', () => {
+  groupModal.classList.remove('show');
+  groupModal.dataset.groupId = '';
+});
+groupModal.addEventListener('click', e => {
+  if (e.target === groupModal) {
+    groupModal.classList.remove('show');
+    groupModal.dataset.groupId = '';
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    modal.classList.remove('show');
+    groupModal.classList.remove('show');
+  }
+});
+
+// 최초 렌더
+renderLanguageUI();
+applyFilter();
+</script>
+
+</body>
+</html>
