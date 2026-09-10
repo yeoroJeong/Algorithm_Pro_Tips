@@ -25,6 +25,9 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
 .topbar{height:64px;position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:flex-end;padding:0 30px;background:var(--panel);border-bottom:1px solid var(--line)}
 .search{display:flex;align-items:center;gap:8px;width:min(470px,56vw);padding:9px 12px;background:var(--bg);border:1px solid var(--line);border-radius:12px}.search input{width:100%;border:0;outline:0;background:transparent;color:var(--text)}
 .toplink,.iconbtn{margin-left:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);text-decoration:none;font-size:13px;cursor:pointer}
+.lang-switch{display:flex;align-items:center;gap:4px;margin-right:10px;padding:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px}
+.lang-switch button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:800}
+.lang-switch button.active{background:var(--panel);color:var(--text);box-shadow:0 2px 7px rgba(15,23,42,.12)}
 .content{max-width:1460px;margin:auto;padding:32px 38px 72px}.section{scroll-margin-top:84px}.hero{display:grid;grid-template-columns:1.6fr .9fr;gap:24px;padding:27px;background:linear-gradient(135deg,#fff9ef,#fff);border:1px solid #ffd597;border-radius:20px;box-shadow:var(--shadow)}body.dark .hero{background:linear-gradient(135deg,#382712,#151d2a);border-color:#76501c}
 .hero h1{margin:0 0 10px;font-size:36px;line-height:1.2;letter-spacing:-.045em}.hero p{max-width:760px;margin:0;color:var(--muted);line-height:1.75}.hero strong{color:var(--brand)}
 .hero-order{display:grid;gap:8px;align-content:center}.order{display:flex;gap:12px;align-items:center;padding:11px 13px;background:rgba(255,255,255,.72);border:1px solid #f7d7aa;border-radius:12px;font-size:14px}body.dark .order{background:#202534;border-color:#694716}.order b{display:grid;place-items:center;flex:0 0 28px;height:28px;border-radius:8px;background:var(--brand);color:#fff}.order span{color:var(--muted)}
@@ -41,7 +44,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
 .empty{display:none;padding:24px;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed var(--line);border-radius:14px}.empty.show{display:block}.footer{display:flex;justify-content:space-between;margin-top:38px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}.footer a{color:var(--brand);font-weight:800;text-decoration:none}
 @media(max-width:1100px){.decision-grid{grid-template-columns:repeat(2,1fr)}.checklist{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}}
 @media(max-width:900px){.algo-grid,.signal-board,.example-grid{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}}
-@media(max-width:820px){.app{grid-template-columns:1fr}.sidebar{display:none}.content{padding:23px 17px 64px}.topbar{padding:0 13px}.search{width:100%}.toplink{display:none}.hero{padding:21px}.hero h1{font-size:30px}.decision-grid,.checklist{grid-template-columns:1fr}.complexity{font-size:13px}.complexity th,.complexity td{padding:10px 9px}.signal{grid-template-columns:1fr auto}.signal span{grid-column:1/-1;grid-row:2}.clue{grid-template-columns:68px 1fr}}
+@media(max-width:820px){.app{grid-template-columns:1fr}.sidebar{display:none}.content{padding:23px 17px 64px}.topbar{padding:0 13px}.search{width:100%}.toplink{display:none}.lang-switch{margin-right:6px}.lang-switch button{padding:7px 8px}.hero{padding:21px}.hero h1{font-size:30px}.decision-grid,.checklist{grid-template-columns:1fr}.complexity{font-size:13px}.complexity th,.complexity td{padding:10px 9px}.signal{grid-template-columns:1fr auto}.signal span{grid-column:1/-1;grid-row:2}.clue{grid-template-columns:68px 1fr}}
 </style>
 </head>
 <body>
@@ -53,7 +56,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
       <a href="#decision">🧭 문제 → 알고리즘</a>
       <a href="#complexity">⏱️ 제한으로 거르기</a>
       <a href="#signals">🔍 문장 신호표</a>
-      <div class="nav-title">C++ 최소 템플릿</div>
+      <div class="nav-title"><span id="navLanguage">C++</span> 최소 템플릿</div>
       <a href="#templates">🧩 핵심 코드</a>
       <a href="#examples">📝 기출에 적용하기</a>
       <a href="#submit">✅ 제출 전 점검</a>
@@ -64,6 +67,10 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
 
   <main class="main">
     <div class="topbar">
+      <div class="lang-switch" id="langSwitch" aria-label="언어 전환">
+        <button type="button" data-lang="cpp" class="active">C++</button>
+        <button type="button" data-lang="python">Python</button>
+      </div>
       <div class="search">🔎 <input id="search" aria-label="알고리즘 검색" placeholder="문장·알고리즘 검색 (예: 최단 거리, 부분합)"/></div>
       <a class="toplink" href="index.html">B형</a>
       <button class="iconbtn" id="theme" type="button" aria-label="다크 모드 전환">🌙</button>
@@ -73,7 +80,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
       <section class="hero">
         <div>
           <h1>문제를 읽고 <strong>알고리즘을 고르는</strong> A형 치트시트</h1>
-          <p>외운 코드를 먼저 떠올리지 않습니다. 입력 크기로 가능한 시간복잡도를 정하고, 문제 문장에서 요구하는 답과 상태 변화를 찾아 알고리즘을 선택한 뒤 최소 템플릿만 꺼내 쓰세요.</p>
+          <p>외운 코드를 먼저 떠올리지 않습니다. 입력 크기로 가능한 시간복잡도를 정하고, 문제 문장에서 요구하는 답과 상태 변화를 찾아 알고리즘을 선택한 뒤 <span id="heroLanguage">C++</span> 최소 템플릿만 꺼내 쓰세요.</p>
         </div>
         <div class="hero-order" aria-label="치트시트 사용 순서">
           <div class="order"><b>1</b><span><strong>제한</strong>으로 불가능한 풀이 제거</span></div>
@@ -130,7 +137,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
       </section>
 
       <section class="section" id="templates">
-        <div class="section-head"><h2>C++ 핵심 템플릿</h2><p>완성 코드가 아니라 문제 조건을 끼워 넣을 최소 골격입니다.</p></div>
+        <div class="section-head"><h2><span id="templateLanguage">C++</span> 핵심 템플릿</h2><p>완성 코드가 아니라 문제 조건을 끼워 넣을 최소 골격입니다.</p></div>
         <div class="filters" aria-label="알고리즘 분류 필터">
           <button class="filter active" data-filter="all">전체</button><button class="filter" data-filter="core">A형 핵심</button><button class="filter" data-filter="range">배열·구간</button><button class="filter" data-filter="graph">그래프</button>
         </div>
@@ -355,6 +362,193 @@ const cards = [...document.querySelectorAll('.algo-card')];
 const filters = [...document.querySelectorAll('.filter')];
 const empty = document.getElementById('empty');
 let currentFilter = 'all';
+let currentLanguage = localStorage.getItem('btype-language') || 'cpp';
+
+const cppCodes = {};
+cards.forEach(card => { cppCodes[card.id] = card.querySelector('.code').innerText; });
+
+const pythonCodes = {
+  backtracking: `used = [False] * N
+choice = [0] * M
+
+def dfs(depth):
+    if depth == M:
+        update_answer(choice)
+        return
+
+    for i in range(N):
+        if used[i]:
+            continue
+        used[i] = True
+        choice[depth] = i
+        dfs(depth + 1)
+        used[i] = False`,
+
+  dfs: `import sys
+sys.setrecursionlimit(10**6)
+
+dy = (-1, 1, 0, 0)
+dx = (0, 0, -1, 1)
+visited = [[False] * M for _ in range(N)]
+
+def dfs(y, x):
+    visited[y][x] = True
+    for d in range(4):
+        ny, nx = y + dy[d], x + dx[d]
+        if not (0 <= ny < N and 0 <= nx < M):
+            continue
+        if visited[ny][nx] or board[ny][nx] == 0:
+            continue
+        dfs(ny, nx)`,
+
+  bfs: `from collections import deque
+
+dy = (-1, 1, 0, 0)
+dx = (0, 0, -1, 1)
+dist = [[-1] * M for _ in range(N)]
+
+q = deque([(sy, sx)])
+dist[sy][sx] = 0
+while q:
+    y, x = q.popleft()
+    for d in range(4):
+        ny, nx = y + dy[d], x + dx[d]
+        if not (0 <= ny < N and 0 <= nx < M):
+            continue
+        if dist[ny][nx] != -1 or board[ny][nx] == 0:
+            continue
+        dist[ny][nx] = dist[y][x] + 1
+        q.append((ny, nx))`,
+
+  simulation: `for turn in range(K):
+    changes = []
+
+    # 1. 현재 상태만 보고 모든 변화 수집
+    for obj in objects:
+        changes.append(decide(obj))
+
+    # 2. 수집한 변화를 한꺼번에 적용
+    for change in changes:
+        apply(change)
+
+    # 3. 충돌/삭제/점수 등 후처리
+    cleanup()`,
+
+  greedy: `# (끝 시간, 시작 시간) 순으로 정렬
+meetings.sort()
+
+count = 0
+last_end = -1
+for end, start in meetings:
+    if start < last_end:
+        continue
+    count += 1
+    last_end = end`,
+
+  dp: `INF = 10**18
+dp = [INF] * (N + 1)
+dp[0] = 0  # dp[i] = i까지 도달하는 최소 비용
+
+for i in range(N):
+    if dp[i] == INF:
+        continue
+    for nxt, cost in transitions(i):
+        dp[nxt] = min(dp[nxt], dp[i] + cost)`,
+
+  prefix: `ps = [[0] * (M + 1) for _ in range(N + 1)]
+
+for y in range(1, N + 1):
+    for x in range(1, M + 1):
+        ps[y][x] = (a[y][x] + ps[y-1][x]
+                    + ps[y][x-1] - ps[y-1][x-1])
+
+# (y1,x1) ~ (y2,x2), 양 끝 포함
+total = (ps[y2][x2] - ps[y1-1][x2]
+         - ps[y2][x1-1] + ps[y1-1][x1-1])`,
+
+  binary: `lo, hi = MIN_VALUE, MAX_VALUE
+answer = lo - 1
+
+while lo <= hi:
+    mid = (lo + hi) // 2
+    if possible(mid):
+        answer = mid
+        lo = mid + 1  # 더 큰 답 시도
+    else:
+        hi = mid - 1`,
+
+  window: `left = 0
+answer = float('inf')
+total = 0
+
+for right in range(N):
+    total += a[right]
+    while total >= S:
+        answer = min(answer, right - left + 1)
+        total -= a[left]
+        left += 1`,
+
+  dijkstra: `import heapq
+
+INF = 10**18
+dist = [INF] * V
+dist[start] = 0
+pq = [(0, start)]
+
+while pq:
+    cost, cur = heapq.heappop(pq)
+    if cost != dist[cur]:
+        continue
+
+    for nxt, weight in graph[cur]:
+        new_cost = cost + weight
+        if dist[nxt] <= new_cost:
+            continue
+        dist[nxt] = new_cost
+        heapq.heappush(pq, (new_cost, nxt))`,
+
+  dsu: `parent = list(range(N))
+size = [1] * N
+
+def find(x):
+    if parent[x] != x:
+        parent[x] = find(parent[x])
+    return parent[x]
+
+def union(a, b):
+    a, b = find(a), find(b)
+    if a == b:
+        return False
+    if size[a] < size[b]:
+        a, b = b, a
+    parent[b] = a
+    size[a] += size[b]
+    return True`
+};
+
+function renderLanguage() {
+  const languageLabel = currentLanguage === 'python' ? 'Python' : 'C++';
+  document.getElementById('navLanguage').textContent = languageLabel;
+  document.getElementById('heroLanguage').textContent = languageLabel;
+  document.getElementById('templateLanguage').textContent = languageLabel;
+  document.querySelectorAll('#langSwitch button').forEach(button => {
+    button.classList.toggle('active', button.dataset.lang === currentLanguage);
+  });
+  cards.forEach(card => {
+    card.querySelector('.code').textContent = currentLanguage === 'python'
+      ? pythonCodes[card.id]
+      : cppCodes[card.id];
+  });
+}
+
+document.querySelectorAll('#langSwitch button').forEach(button => {
+  button.addEventListener('click', () => {
+    currentLanguage = button.dataset.lang;
+    localStorage.setItem('btype-language', currentLanguage);
+    renderLanguage();
+    applyFilter();
+  });
+});
 
 function applyFilter() {
   const q = search.value.trim().toLowerCase();
@@ -388,6 +582,8 @@ document.querySelectorAll('.copy').forEach(button => button.addEventListener('cl
     button.textContent = '선택 후 복사';
   }
 }));
+
+renderLanguage();
 
 const theme = document.getElementById('theme');
 const saved = localStorage.getItem('algorithm-pro-theme');
