@@ -365,7 +365,7 @@ let currentFilter = 'all';
 let currentLanguage = localStorage.getItem('btype-language') || 'cpp';
 
 const cppCodes = {};
-cards.forEach(card => { cppCodes[card.id] = card.querySelector('.code').innerText; });
+cards.forEach(card => { cppCodes[card.id] = card.querySelector('.code').textContent; });
 
 const pythonCodes = {
   backtracking: `used = [False] * N
