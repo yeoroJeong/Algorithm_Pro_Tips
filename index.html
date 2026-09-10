@@ -22,12 +22,16 @@ button,input{font:inherit} html{scroll-behavior:smooth}
 .nav-title{font-size:12px;color:#a9bad3;margin:22px 8px 8px}
 .nav button{width:100%;border:0;background:transparent;color:#dbe8f9;text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer;margin:2px 0}
 .nav button:hover,.nav button.active{background:#1565d8;color:#fff}
+.nav .page-link{display:block;color:#fff;text-decoration:none;padding:11px 12px;border-radius:10px;margin:2px 0;background:linear-gradient(135deg,#f79009,#fdb022);font-weight:800}
+.nav .page-link:hover{filter:brightness(1.06)}
 .tipbox{margin-top:18px;border:1px solid #315078;border-radius:14px;padding:14px;font-size:13px;line-height:1.6;color:#d6e6fb}
 .main{min-width:0}
 .topbar{height:64px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;padding:0 30px;position:sticky;top:0;z-index:10}
 .search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:9px 12px;width:min(430px,56vw)}
 .search input{width:100%;border:0;outline:0;background:transparent;color:var(--text)}
 .iconbtn{margin-left:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:9px 11px;cursor:pointer}
+.a-toplink{display:inline-flex;align-items:center;gap:6px;text-decoration:none;background:#fff4e5;color:#b54708;border:1px solid #fedf89;border-radius:10px;padding:8px 11px;font-weight:800;font-size:12px;white-space:nowrap;margin-right:10px}
+body.dark .a-toplink{background:#3a2813;color:#fec84b;border-color:#7a4e12}
 .content{padding:34px 38px 70px;max-width:1450px;margin:auto}
 .hero h1{font-size:38px;margin:0 0 8px} .hero p{color:var(--muted);font-size:16px;line-height:1.7;margin:0}
 .callout{margin-top:22px;background:linear-gradient(135deg,#eaf3ff,#f3edff);border:1px solid #d8e5ff;padding:18px 20px;border-radius:16px;color:#223}
@@ -136,6 +140,7 @@ body.dark .lang-badge{color:#84adff}
     <div class="brand"><div class="logo">B</div><span id="brandTitle">B형(Pro) C++ 풀이 팁</span></div>
     <div class="nav">
       <button class="active" data-filter="all">🏠 전체 보기</button>
+      <a class="page-link" href="a-type.html">⚡ A형 치트시트</a>
       <div class="nav-title">문제 유형</div>
       <button data-filter="graph">🟢 그래프 탐색</button>
       <button data-filter="shortest">🟣 최단 경로</button>
@@ -161,6 +166,7 @@ body.dark .lang-badge{color:#84adff}
   <main class="main">
     <div class="topbar">
 
+      <a class="a-toplink" href="a-type.html">⚡ A형 치트시트</a>
       <div class="lang-switch" id="langSwitch" aria-label="언어 전환">
         <button type="button" data-lang="cpp" class="active">C++</button>
         <button type="button" data-lang="python">Python</button>
