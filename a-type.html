@@ -28,6 +28,11 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
 .lang-switch{display:flex;align-items:center;gap:4px;margin-right:10px;padding:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px}
 .lang-switch button{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:800}
 .lang-switch button.active{background:var(--panel);color:var(--text);box-shadow:0 2px 7px rgba(15,23,42,.12)}
+.floating-lang{position:fixed;right:18px;top:50%;z-index:30;display:grid;gap:7px;width:166px;padding:12px;transform:translateY(-50%);background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:0 14px 40px rgba(15,23,42,.18)}
+.floating-lang span{padding:1px 4px 4px;color:var(--muted);font-size:12px;font-weight:800}
+.floating-lang button{width:100%;padding:11px 10px;border:1px solid var(--line);border-radius:11px;background:var(--bg);color:var(--text);cursor:pointer;text-align:left;font-size:13px;font-weight:800;transition:transform .15s ease,border-color .15s ease,background .15s ease}
+.floating-lang button:hover{transform:translateX(-2px);border-color:var(--brand)}
+.floating-lang button.active{border-color:var(--brand);background:var(--soft);color:var(--brand);box-shadow:inset 3px 0 0 var(--brand)}
 .content{max-width:1460px;margin:auto;padding:32px 38px 72px}.section{scroll-margin-top:84px}.hero{display:grid;grid-template-columns:1.6fr .9fr;gap:24px;padding:27px;background:linear-gradient(135deg,#fff9ef,#fff);border:1px solid #ffd597;border-radius:20px;box-shadow:var(--shadow)}body.dark .hero{background:linear-gradient(135deg,#382712,#151d2a);border-color:#76501c}
 .hero h1{margin:0 0 10px;font-size:36px;line-height:1.2;letter-spacing:-.045em}.hero p{max-width:760px;margin:0;color:var(--muted);line-height:1.75}.hero strong{color:var(--brand)}
 .hero-order{display:grid;gap:8px;align-content:center}.order{display:flex;gap:12px;align-items:center;padding:11px 13px;background:rgba(255,255,255,.72);border:1px solid #f7d7aa;border-radius:12px;font-size:14px}body.dark .order{background:#202534;border-color:#694716}.order b{display:grid;place-items:center;flex:0 0 28px;height:28px;border-radius:8px;background:var(--brand);color:#fff}.order span{color:var(--muted)}
@@ -44,7 +49,8 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
 .empty{display:none;padding:24px;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed var(--line);border-radius:14px}.empty.show{display:block}.footer{display:flex;justify-content:space-between;margin-top:38px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}.footer a{color:var(--brand);font-weight:800;text-decoration:none}
 @media(max-width:1100px){.decision-grid{grid-template-columns:repeat(2,1fr)}.checklist{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}}
 @media(max-width:900px){.algo-grid,.signal-board,.example-grid{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}}
-@media(max-width:820px){.app{grid-template-columns:1fr}.sidebar{display:none}.content{padding:23px 17px 64px}.topbar{padding:0 13px}.search{width:100%}.toplink{display:none}.lang-switch{margin-right:6px}.lang-switch button{padding:7px 8px}.hero{padding:21px}.hero h1{font-size:30px}.decision-grid,.checklist{grid-template-columns:1fr}.complexity{font-size:13px}.complexity th,.complexity td{padding:10px 9px}.signal{grid-template-columns:1fr auto}.signal span{grid-column:1/-1;grid-row:2}.clue{grid-template-columns:68px 1fr}}
+@media(max-width:1350px) and (min-width:821px){.floating-lang{right:10px;width:54px;padding:7px}.floating-lang span{display:none}.floating-lang button{padding:10px 6px;text-align:center;font-size:0}.floating-lang button:first-of-type:after{content:"🐍";font-size:20px}.floating-lang button:last-of-type:after{content:"C++";font-size:12px}}
+@media(max-width:820px){.app{grid-template-columns:1fr}.sidebar{display:none}.content{padding:23px 17px 114px}.topbar{padding:0 13px}.search{width:100%}.toplink{display:none}.lang-switch{display:none}.floating-lang{top:auto;right:12px;bottom:12px;left:12px;width:auto;grid-template-columns:auto 1fr 1fr;align-items:center;transform:none;padding:8px}.floating-lang span{padding:0 6px}.floating-lang button{text-align:center;padding:10px 8px}.floating-lang button:hover{transform:none}.hero{padding:21px}.hero h1{font-size:30px}.decision-grid,.checklist{grid-template-columns:1fr}.complexity{font-size:13px}.complexity th,.complexity td{padding:10px 9px}.signal{grid-template-columns:1fr auto}.signal span{grid-column:1/-1;grid-row:2}.clue{grid-template-columns:68px 1fr}}
 </style>
 </head>
 <body>
@@ -67,7 +73,7 @@ button,input{font:inherit}.app{display:grid;grid-template-columns:276px 1fr;min-
 
   <main class="main">
     <div class="topbar">
-      <div class="lang-switch" id="langSwitch" aria-label="언어 전환">
+      <div class="lang-switch" id="langSwitch" data-language-control aria-label="언어 전환">
         <button type="button" data-lang="cpp" class="active">C++</button>
         <button type="button" data-lang="python">Python</button>
       </div>
@@ -356,6 +362,11 @@ bool unite(int a, int b) {
     </div>
   </main>
 </div>
+<aside class="floating-lang" data-language-control aria-label="빠른 코드 언어 전환">
+  <span>코드 언어</span>
+  <button type="button" data-lang="python">🐍 Python으로 보기</button>
+  <button type="button" data-lang="cpp">⌨ C++로 보기</button>
+</aside>
 <script>
 const search = document.getElementById('search');
 const cards = [...document.querySelectorAll('.algo-card')];
@@ -531,8 +542,9 @@ function renderLanguage() {
   document.getElementById('navLanguage').textContent = languageLabel;
   document.getElementById('heroLanguage').textContent = languageLabel;
   document.getElementById('templateLanguage').textContent = languageLabel;
-  document.querySelectorAll('#langSwitch button').forEach(button => {
+  document.querySelectorAll('[data-language-control] button').forEach(button => {
     button.classList.toggle('active', button.dataset.lang === currentLanguage);
+    button.setAttribute('aria-pressed', button.dataset.lang === currentLanguage ? 'true' : 'false');
   });
   cards.forEach(card => {
     card.querySelector('.code').textContent = currentLanguage === 'python'
@@ -541,7 +553,7 @@ function renderLanguage() {
   });
 }
 
-document.querySelectorAll('#langSwitch button').forEach(button => {
+document.querySelectorAll('[data-language-control] button').forEach(button => {
   button.addEventListener('click', () => {
     currentLanguage = button.dataset.lang;
     localStorage.setItem('btype-language', currentLanguage);
